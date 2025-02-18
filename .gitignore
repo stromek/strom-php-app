@@ -1,0 +1,13 @@
+.idea
+.env
+.serverless
+phpstan.neon
+
+
+# Dependencies
+/vendor
+node_modules
+
+# Temp, logs...
+tmp/*
+!tmp/.gitkeep

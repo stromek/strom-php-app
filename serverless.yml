@@ -1,0 +1,37 @@
+service: strom-php-app
+
+provider:
+    name: aws
+    region: eu-central-1
+    stage: dev # dev is default
+    runtime: php-82-fpm
+
+plugins:
+  - ./vendor/bref/bref
+  - serverless-lift
+
+functions:
+    api:
+        handler: htdocs/index.php
+        description: ''
+        timeout: 28 # in seconds (API Gateway has a timeout of 29 seconds)
+        events:
+            -   httpApi: '*'
+        environment:
+            PHP_INI_SCAN_DIR: /var/task/config/php
+
+constructs:
+  website:
+    type: server-side-website
+    assets:
+      '/public/*': public
+
+
+# Exclude files from deployment
+package:
+    patterns:
+        - '!node_modules/**'
+        - '!tests/**'
+        - '!tmp/**'
+        - 'tmp/.gitkeep'
+        - '!.idea/**'

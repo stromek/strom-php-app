@@ -1,0 +1,11 @@
+parameters:
+	level: 8
+	paths:
+		- config
+		- htdocs
+		- src
+		- tests
+	bootstrapFiles:
+		- boot/constants.php
+
+	tmpDir: tmp

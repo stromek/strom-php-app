@@ -1,0 +1,1 @@
+docker-compose up db-mysql -d

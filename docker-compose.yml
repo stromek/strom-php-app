@@ -1,0 +1,29 @@
+name: strom-php-app
+
+services:
+  api:
+    image: bref/php-82-fpm-dev:2
+    ports: ['8000:8000']
+    volumes:
+      - .:/var/task
+    environment:
+      HANDLER: htdocs/index.php
+      # Assets will be served from this directory
+      DOCUMENT_ROOT: public
+      PHP_INI_SCAN_DIR: /var/task/config/php
+
+  db-mysql:
+    image: mysql:8.4.4
+    environment:
+      MYSQL_ROOT_PASSWORD: OxAk5S-vS3_
+      MYSQL_USER: ${DB_MYSQL_USER}
+      MYSQL_PASSWORD: ${DB_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${DB_MYSQL_DATABASE}
+    ports:
+      - "3310:3306"
+    volumes:
+      - db-mysql-data:/var/lib/mysql
+      - ./config/mysql:/etc/mysql/conf.d
+      - ./init/mysql:/docker-entrypoint-initdb.d:ro
+volumes:
+  db-mysql-data:

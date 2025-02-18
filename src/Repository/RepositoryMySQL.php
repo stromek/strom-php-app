@@ -1,0 +1,165 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\Entity;
+use App\Mapper\MapperMySQL;
+use App\Repository\Enum\RepositorySourceEnum;
+use Dibi\Result;
+use Dibi\Row;
+
+
+/**
+ * @template E of Entity
+ * @template M of MapperMySQL
+ */
+abstract class RepositoryMySQL implements RepositoryInterface {
+
+  protected \Dibi\Connection $db;
+
+  public function __construct(\Dibi\Connection $db) {
+    $this->db = $db;
+  }
+
+
+  public function getSource(): RepositorySourceEnum {
+    return RepositorySourceEnum::MYSQL;
+  }
+
+  /**
+   * @param Entity<E> $Entity
+   */
+  public function checkEntity(Entity $Entity): void {
+    $Entity->check(false);
+  }
+
+
+
+  /**
+   * @param string $tableName
+   * @param array<int, array<int, mixed>> $conditions
+   * @return \Dibi\Row|null
+   * @throws \Dibi\Exception
+   */
+  protected function findRow(string $tableName, array $conditions): ?\Dibi\Row {
+    $q = "SELECT * FROM %n WHERE %and";
+
+    return $this->db->query($q, $tableName, $conditions)->fetch();
+  }
+
+
+  /**
+   * @param MapperMySQL<M, E> $Mapper
+   * @param Entity<E> $Entity
+   * @param string $tableName
+   */
+  protected function insertEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+    $this->checkEntity($Entity);
+    $Result = $this->insertRow($tableName, $Mapper->entityToInsert($Entity));
+
+    $refreshProperties = $Mapper->entityToRefresh($Entity);
+    if(count($refreshProperties)) {
+      $this->refreshEntity($Entity, $tableName, $refreshProperties, $Mapper->entityToConditions($Entity));
+    }
+
+    return $Result;
+  }
+
+
+  /**
+   * @param string $tableName
+   * @param array<string, \Dibi\Literal> $data
+   **/
+  protected function insertRow(string $tableName, array $data): Result {
+    $q = "INSERT INTO %n SET %a";
+    return $this->db->query($q, $tableName, $data);
+  }
+
+
+  /**
+   * @param MapperMySQL<M, E> $Mapper
+   * @param Entity<E> $Entity
+   * @param string $tableName
+   */
+  protected function updateEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+    $this->checkEntity($Entity);
+    $Result = $this->updateRow($tableName, $Mapper->entityToUpdate($Entity), $Mapper->entityToConditions($Entity));
+
+    $refreshProperties = $Mapper->entityToRefresh($Entity);
+    if(count($refreshProperties)) {
+      $this->refreshEntity($Entity, $tableName, $refreshProperties, $Mapper->entityToConditions($Entity));
+    }
+
+    return $Result;
+  }
+
+
+  /**
+   * @param string $tableName
+   * @param array<string, \Dibi\Literal> $data
+   * @param array<string, \Dibi\Literal> $conditions
+   */
+  protected function updateRow(string $tableName, array $data, array $conditions): Result {
+    $q = "UPDATE %n SET %a WHERE %and";
+    return $this->db->query($q, $tableName, $data, $conditions);
+  }
+
+
+  /**
+   * @param M $Mapper
+   * @param Entity<E> $Entity
+   * @param string $tableName
+   */
+  protected function deleteEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+    $this->checkEntity($Entity);
+    return $this->deleteRow($tableName, $Mapper->entityToConditions($Entity));
+  }
+
+
+  /**
+   * @param string $tableName
+   * @param array<int, array{0: string, 1: mixed}> $conditions
+   * @param int $limit
+   * @return int
+   * @throws \Dibi\Exception
+   */
+  protected function deleteRow(string $tableName, array $conditions, int $limit = 1): Result {
+    $q = "DELETE FROM %n WHERE %and LIMIT %i";
+    return $this->db->query($q, $tableName, $conditions, $limit);
+  }
+
+
+  /**
+   * Refresh hodnot z databáze do entity
+   *
+   * @param Entity<E> $Entity
+   * @param string $tableName
+   * @param string[] $properties názvy property/názvy sloupců
+   * @param array<int, array{0: string, 1: mixed}> $conditions
+   * @return void
+   * @throws \Dibi\Exception
+   */
+  protected function refreshEntity(Entity $Entity, string $tableName, array $properties, array $conditions): void {
+    if(!count($properties)) {
+      throw new RepositoryException("At least one property must be defined in \$properties");
+    }
+    if(!count($conditions)) {
+      throw new RepositoryException("At least one condition must be defined in \$conditions");
+    }
+
+    $q = "
+      SELECT %n
+      FROM %n
+      WHERE %and
+      LIMIT 1
+    ";
+    $Result = $this->db->query($q, $properties, $tableName, $conditions)->fetch();
+
+    foreach($properties as $property) {
+      $Entity->{$property} = $Result->{$property};
+    }
+  }
+
+  
+}
