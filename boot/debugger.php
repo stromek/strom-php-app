@@ -77,11 +77,11 @@ function vd(mixed $var): void {
 
   $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
   foreach($backtrace as $i => $item) {
-    /** @var ReflectionFunctionAbstract $Reflection */
+    /** @var \ReflectionMethod|ReflectionFunction|null $Reflection */
 
     echo "<tr>";
     echo "<td style='text-align: right''>".(count($backtrace) - $i)."</td>";
-    echo "<td>".\Tracy\Helpers::editorLink($item['file'], $item['line'])."</td>";
+    echo "<td>".((isset($item['file']) AND isset($item['line'])) ? \Tracy\Helpers::editorLink($item['file'], $item['line']) : "?")."</td>";
 
     $Reflection = null;
     $functionName = "";
@@ -93,7 +93,7 @@ function vd(mixed $var): void {
 
     }elseif(isset($item['class'])) {
       $Reflection = new \ReflectionMethod($item['class'], $item['function']);
-      $functionName = "{$item['class']}{$item['type']}{$item['function']}";
+      $functionName = $item['class'].($item['type']??"?").$item['function'];
 
     }elseif($item['function']) {
       $Reflection = new \ReflectionFunction($item['function']);
@@ -121,9 +121,9 @@ function vd(mixed $var): void {
 
     echo "<td>{$functionName}(".implode(", ", $parameters).")</td>";
 
-    if($item['file'] AND file_exists($item['file'])) {
+    if(isset($item['file']) AND isset($item['line']) AND file_exists($item['file'])) {
       $k = 0;
-      $lines = implode("\n", array_slice(file($item['file']), max(0, $item['line'] - 1 - $k), 1 + $k));
+      $lines = implode("\n", array_slice(file($item['file']) ?: [], max(0, $item['line'] - 1 - $k), 1 + $k));
 
       echo "<td>".nl2br($lines)."</td>";
     }

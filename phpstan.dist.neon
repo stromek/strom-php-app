@@ -1,6 +1,7 @@
 parameters:
 	level: 8
 	paths:
+		- boot
 		- config
 		- htdocs
 		- src
