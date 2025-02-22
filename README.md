@@ -1,16 +1,16 @@
 # Obecné požadavky
 - Vytvořit soubor /.env (z .env.example)
-- Do .evn není nutné zadávát údaje (jen musí existovat). Aplikace vrací falešná data a připojení k MySQL/Elasticu je jenom nachystané.
+- Do .evn zadat údaje k MYSQL
 
+# Vývoj
+- docker / php devServer
+- http://localhost:8000
 
 # Apache
-- Spuštění v Apache s VirtualHostem.
+- VirtualHost
 - DocumentRoot musí mířit do /htdocs
-- Povolit .htaccess
+- povolit .htaccess
 
 # AWS
 - serverless deploy
 
-# Vývoj
-- docker 
-- Aplikace poběží na *localhost:8000*
