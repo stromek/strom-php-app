@@ -14,28 +14,26 @@ use App\Entity\Entity;
 /**
  * Entity property, responsible for the GET/SET, validation and mutation
  *
- * @template T of Entity
- * @template A of AttributeInterface
+ * @template E of Entity
  */
 class Property {
 
   private string $name;
 
   /**
-   * @var A[]
+   * @var array<int, AttributeInterface>
    */
   private array $attributes = [];
 
   private \ReflectionProperty $reflection;
 
   /**
-   * @var Entity<T>
+   * @var Entity<E>
    */
   private Entity $entity;
 
-
   /**
-   * @param Entity<T> $Entity
+   * @param Entity<E> $Entity
    * @param string $name
    * @throws PropertyException
    */
@@ -136,6 +134,9 @@ class Property {
   }
 
 
+  /**
+   * @throws PropertyException
+   */
   public function validate(bool $strict = true): void {
     if(!$strict AND !$this->hasDefaultValue()) {
       return;
@@ -145,6 +146,9 @@ class Property {
   }
 
 
+  /**
+   * @throws PropertyException
+   */
   public function mutate(): mixed {
     $value = $this->getValue();
     $this->setValue($this->mutateValue($value));
@@ -154,10 +158,9 @@ class Property {
 
 
   /**
-   * @TODO caching of instances
-   *
-   * @param null|class-string<A> $attributeClassName
-   * @return AttributeInterface<A>[]
+   * @template T of AttributeInterface
+   * @param ?class-string<T> $attributeClassName
+   * @return ($attributeClassName is null ? AttributeInterface[] : T[])
    */
   public function getAttributes(string $attributeClassName = null): array {
     if(is_null($attributeClassName)) {
@@ -189,7 +192,7 @@ class Property {
 
 
   /**
-   * @param AttributeInterface<A> $Attribute
+   * @param AttributeInterface $Attribute
    */
   public function addAttribute(AttributeInterface $Attribute): void {
     $this->attributes[] = $Attribute;

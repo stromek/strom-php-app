@@ -8,7 +8,7 @@ use App\Entity\Entity;
 
 /**
  * @template E of Entity
- * @extends Validator<string, Entity>
+ * @extends Validator<string, E>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class EmailAddress extends Validator {

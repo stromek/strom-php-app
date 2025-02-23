@@ -9,23 +9,23 @@ use App\Entity\Entity;
 
 
 /**
- * @template T of Entity
+ * @template E of Entity
  */
 class PropertyStorage {
 
   /**
-   * @var Property<T>[]
+   * @var array<string, Property<E>>
    */
   private array $properties;
 
   /**
-   * @var Entity<T>
+   * @var Entity<E>
    */
   private Entity $entity;
 
 
   /**
-   * @param Entity<T> $Entity
+   * @param Entity<E> $Entity
    */
   public function __construct(Entity $Entity) {
     $this->entity = $Entity;
@@ -57,9 +57,9 @@ class PropertyStorage {
 
 
   /**
-   * @return Property<T>[]
-   * @throws StorageException
+   * @return array<string, Property<E>>
    * @throws PropertyException
+   * @throws StorageException
    * @throws \ReflectionException
    */
   public function getProperties(): array {
@@ -70,17 +70,17 @@ class PropertyStorage {
 
 
     $ReflectionClass = new \ReflectionClass($this->entity);
-    $pattern = '~@property\s+(?P<type>[^\s]+)\s+\$(?P<name>[^\s]+)~';
 
+    $pattern = '~@property\s+(?P<type>[^\s]+)\s+\$(?P<name>[^\s]+)~';
     if(!preg_match_all($pattern, $ReflectionClass->getDocComment() ?: "", $matches, PREG_SET_ORDER)) {
-      throw new StorageException("No '@property' string found in docs class of '".get_class($this->entity)."'");
+      throw new StorageException("No '@property' string found in docs class of '".$this->entity::class."'");
     }
 
     foreach ($matches as $match) {
       $Property = new Property($this->entity, $match['name']);
       $this->properties[$Property->getName()] = $Property;
     }
-    
+
 
     return $this->properties;
   }
@@ -88,26 +88,17 @@ class PropertyStorage {
 
   /**
    * @param string $name
-   * @return Property<T>
-   * @throws StorageException
-   * @throws PropertyException
-   * @throws \ReflectionException
+   * @return Property<E>
+   * @throws PropertyStorageException
    */
   public function getProperty(string $name): Property {
     $Property = $this->getProperties()[$name] ?? null;
 
     if(!$Property) {
-      throw new PropertyStorageException("Property '{$name}' does not exist in ".get_class($this->entity));
+      throw new PropertyStorageException("Property '{$name}' does not exist in '".$this->entity::class."'");
     }
 
     return $Property;
   }
 
-
-//  protected function setPropertyValue(string $name, mixed $value): mixed {
-//    $Property = $this->getProperty($name);
-//    $Property->setValue($value);
-//
-//    return $Property->getValue();
-//  }
 }

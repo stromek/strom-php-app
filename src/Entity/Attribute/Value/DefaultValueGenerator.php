@@ -8,9 +8,9 @@ use App\Entity\Entity;
 
 /**
  * @template E of Entity
- * @implements ValueInterface<callable, Entity>
+ * @implements ValueInterface<callable, E>
  */
-#[\Attribute(\Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class DefaultValueGenerator implements ValueInterface {
 
   private \Closure $callback;

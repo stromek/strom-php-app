@@ -8,7 +8,7 @@ use App\Entity\Entity;
 
 /**
  * @template E of Entity
- * @implements ValueInterface<null, Entity>
+ * @implements ValueInterface<null, E>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class DefaultValue implements ValueInterface {

@@ -9,7 +9,7 @@ use App\Entity\Entity;
 
 /**
  * @template E of Entity
- * @extends Validator<int|float, Entity>
+ * @extends Validator<int|float, E>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Range extends Validator {

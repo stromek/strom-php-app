@@ -6,16 +6,15 @@ namespace App\Entity;
 use App\Entity\Attribute\PropertyException;
 use App\Entity\Property\Property;
 use App\Entity\Property\PropertyStorage;
-use App\Exception\EntityException;
 
 
 /**
- * @template T of Entity
+ * @template E of Entity
  */
 abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
 
   /**
-   * @var PropertyStorage<T>
+   * @var PropertyStorage<E>
    */
   readonly protected PropertyStorage $attributeStorage;
 
@@ -23,23 +22,17 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
     $this->attributeStorage = new PropertyStorage($this);
   }
 
-  /**
-   * @throws PropertyException
-   * @throws EntityException
-   */
   public function __set(string $name, mixed $value): void {
     $this->getProperty($name)->setValue($value);
   }
 
-  /**
-   * @throws EntityException
-   */
   public function __get(string $name): mixed {
     return $this->getProperty($name)->getValue();
   }
 
   public function check(bool $strict = true): void {
-//    $this->mutate();
+    // @TODO mutate spustit ci ne?
+    // $this->mutate();
     $this->validate($strict);
   }
 
@@ -52,7 +45,7 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
   }
 
   /**
-   * @return Property<T>[]
+   * @return Property<E>[]
    */
   public function getProperties(): array {
     return $this->attributeStorage->getProperties();
@@ -60,7 +53,7 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
 
 
   /**
-   * @return \App\Entity\Property\Property<T>
+   * @return Property<E>
    */
   public function getProperty(string $name): Property {
     return $this->attributeStorage->getProperty($name);
