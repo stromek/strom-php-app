@@ -17,6 +17,11 @@ Debugger::enable(Debugger::Development);
 function vd(mixed $var): void {
   static $stylesPrint = false;
 
+  if(php_sapi_name() == 'cli') {
+    Debugger::dump($var);
+    return;
+  }
+
   if(!$stylesPrint) {
     $stylesPrint = true;
     echo "
