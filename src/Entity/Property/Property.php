@@ -15,10 +15,16 @@ use App\Entity\Entity;
  * Entity property, responsible for the GET/SET, validation and mutation
  *
  * @template T of Entity
+ * @template A of AttributeInterface
  */
 class Property {
 
   private string $name;
+
+  /**
+   * @var A[]
+   */
+  private array $attributes = [];
 
   private \ReflectionProperty $reflection;
 
@@ -31,6 +37,7 @@ class Property {
   /**
    * @param Entity<T> $Entity
    * @param string $name
+   * @throws PropertyException
    */
   public function __construct(Entity $Entity, string $name) {
     $this->entity = $Entity;
@@ -41,6 +48,8 @@ class Property {
     } catch(\ReflectionException $e) {
       throw new PropertyException(sprintf("Property '$%s' does not exist in '%s'.", $name, get_class($this->entity)), PropertyException::NOT_EXISTS, $e);
     }
+
+    $this->scanAttributes();
   }
 
 
@@ -78,7 +87,7 @@ class Property {
    */
   public function getValue(): mixed {
     if(!$this->reflection->isInitialized($this->entity)) {
-      $this->reflection->setValue($this->entity, $this->defaultValue());
+      $this->reflection->setValue($this->entity, $this->getDefaultValue());
     }
 
     $method = "get".ucfirst($this->name);
@@ -147,30 +156,20 @@ class Property {
   /**
    * @TODO caching of instances
    *
-   * @template AT of AttributeInterface
-   * @param class-string<AT> $attributeClassName
-   * @return AttributeInterface<AT>[]
-   * @throws PropertyException
+   * @param null|class-string<A> $attributeClassName
+   * @return AttributeInterface<A>[]
    */
-  public function getAttributes(string $attributeClassName): array {
-    $attributes = [];
-
-    foreach ($this->reflection->getAttributes($attributeClassName, \ReflectionAttribute::IS_INSTANCEOF) as $Attribute) {
-      if(!class_exists($Attribute->getName())) {
-        throw new PropertyException(sprintf("Attribute class '%s' does not exist. Class '%s'", $Attribute->getName(), get_class($this->entity)));
-      }
-
-      $attributes[] = $Attribute->newInstance();
+  public function getAttributes(string $attributeClassName = null): array {
+    if(is_null($attributeClassName)) {
+      return $this->attributes;
     }
 
-    return $attributes;
+    return array_filter($this->attributes, fn(AttributeInterface $attribute) => $attribute instanceof $attributeClassName);
   }
 
 
   /**
    * Zda existuje nějaký výchozí hodnota nebo hodnota s generatorem
-   *
-   * @throws PropertyException
    */
   public function hasDefaultValue(bool $includeAttributeValue = true): bool {
     if($this->reflection->isInitialized($this->entity)) {
@@ -190,9 +189,28 @@ class Property {
 
 
   /**
+   * @param AttributeInterface<A> $Attribute
+   */
+  public function addAttribute(AttributeInterface $Attribute): void {
+    $this->attributes[] = $Attribute;
+  }
+
+
+  private function scanAttributes(): void {
+    foreach ($this->reflection->getAttributes(AttributeInterface::class, \ReflectionAttribute::IS_INSTANCEOF) as $Attribute) {
+      if(!class_exists($Attribute->getName())) {
+        throw new PropertyException(sprintf("Attribute class '%s' does not exist. Class '%s'", $Attribute->getName(), get_class($this->entity)));
+      }
+
+      $this->addAttribute($Attribute->newInstance());
+    }
+  }
+
+
+  /**
    * @throws PropertyException
    */
-  private function defaultValue(): mixed {
+  public function getDefaultValue(): mixed {
     $valueGenerators = $this->getAttributes(ValueInterface::class);
 
     // Není žádný výchozí hodnota ani žádný generátor
@@ -213,26 +231,24 @@ class Property {
    * @throws PropertyException
    */
   private function mutateValue(mixed $value): mixed {
-    $newValue = $value;
+    $currentValue = $value;
 
     foreach($this->getAttributes(MutatorInterface::class) as $Mutator) {
-      $newValue = $Mutator->mutate($value, $this->entity);
+      $currentValue = $Mutator->mutate($currentValue, $this->entity);
     }
 
-    return $newValue;
+    return $currentValue;
   }
-
 
   /**
    * @throws PropertyException
    */
   private function validateValue(mixed $value): void {
     foreach($this->getAttributes(ValidatorInterface::class) as $Validator) {
-
       try {
         $Validator->validate($value, $this->entity);
       } catch(ValidatorException $e) {
-        throw new PropertyException(sprintf("Validation failed for '%s'. %s", $this->entity::class."::$".$this->getName(), $e->getMessage()), 0, $e);
+        throw new PropertyException(sprintf("Validation failed for '%s'. %s", $this->entity::class."::$".$this->getName(), $e->getMessage()), PropertyException::VALIDATOR_FAILED, $e);
       }
     }
   }

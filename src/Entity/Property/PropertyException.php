@@ -12,4 +12,6 @@ class PropertyException extends \App\Exception\EntityException {
 
   const NO_DEFAULT_VALUE = 3;
 
+  const VALIDATOR_FAILED = 4;
+
 }

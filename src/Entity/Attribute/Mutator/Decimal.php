@@ -8,7 +8,6 @@ use App\Entity\Entity;
 
 
 /**
- * @template T
  * @template E of Entity
  * @implements MutatorInterface<int|float, E>
  */
