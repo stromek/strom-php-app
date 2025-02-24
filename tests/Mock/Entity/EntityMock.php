@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Mock\Entity;
+namespace App\Tests\Mock\Entity;
 
 use App\Entity\Attribute\Mutator\Decimal;
 use App\Entity\Attribute\Mutator\Division;

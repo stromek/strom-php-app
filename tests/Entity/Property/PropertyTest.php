@@ -5,18 +5,16 @@ namespace Entity\Property;
 use App\Entity\Attribute\Mutator\MutatorInterface;
 use App\Entity\Property\Property;
 use App\Entity\Property\PropertyException;
+use App\Tests\Mock\Entity\EntityMock;
 use PHPUnit\Framework\TestCase;
-
-// @TODO autoloader
-include __DIR__."/../../Mock/Entity/EntityMock.php";
 
 
 class PropertyTest extends TestCase {
 
-  private \Mock\Entity\EntityMock $entity;
+  private EntityMock $entity;
 
   protected function setUp(): void {
-    $this->entity = new \Mock\Entity\EntityMock();
+    $this->entity = new EntityMock();
   }
 
 
