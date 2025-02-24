@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Attribute\ApiResponse\Visibility;
 use App\Entity\Attribute\Storage\Storage;
 use App\Entity\Attribute\Storage\Primary;
 use App\Entity\Attribute\Validator\Length;

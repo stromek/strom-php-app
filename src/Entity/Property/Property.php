@@ -158,6 +158,14 @@ class Property {
 
 
   /**
+   * @param class-string<AttributeInterface> $attributeClassName
+   * @return bool
+   */
+  public function hasAttributes(string $attributeClassName): bool {
+    return count($this->getAttributes($attributeClassName)) > 0;
+  }
+
+  /**
    * @template T of AttributeInterface
    * @param ?class-string<T> $attributeClassName
    * @return ($attributeClassName is null ? AttributeInterface[] : T[])
