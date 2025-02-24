@@ -100,12 +100,12 @@ function vd(mixed $var): void {
       $Reflection = new \ReflectionMethod($item['class'], $item['function']);
       $functionName = $item['class'].($item['type']??"?").$item['function'];
 
-    }elseif($item['function']) {
+    }elseif($item['function'] AND function_exists($item['function'])) {
       $Reflection = new \ReflectionFunction($item['function']);
       $functionName = $item['function'];
 
     }else {
-      $functionName = "?";
+      $functionName = $item['function'] ?? "?";
     }
 
 

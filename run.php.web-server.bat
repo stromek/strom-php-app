@@ -1,1 +1,1 @@
-php -S localhost:8000 -t ./htdocs
+php -S localhost:8000 -t ./htdocs htdocs/cli-router.php
