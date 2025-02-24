@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace App\Mapper\Customer;
 
 use App\Entity\Factory\CustomerEntityFactory;
+use App\Mapper\MapperMySQL;
 
 
 /**
- * @extends \App\Mapper\MapperMySQL<\App\Entity\Entity>
+ * @template E of \App\Entity\Entity
+ * @extends MapperMySQL<E>
  */
-class CustomerMapperMySQL extends \App\Mapper\MapperMySQL {
+class CustomerMapperMySQL extends MapperMySQL {
 
   private CustomerEntityFactory $factory;
 

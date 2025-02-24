@@ -7,13 +7,20 @@ namespace App\Controller\Customer;
 
 use App\Api\Response\ResponseInterface;
 use App\Api\Transformer\CustomerResponseTransformer;
+use App\Entity\CustomerEntity;
 use App\Entity\Factory\CustomerEntityFactory;
 use App\Repository\Customer\CustomerRepositoryMySQL;
 
 
+/**
+ * @template E of CustomerEntity
+ */
 class CustomerController extends \App\Controller\Controller {
 
 
+  /**
+   * @var CustomerRepositoryMySQL<E>
+   */
   private CustomerRepositoryMySQL $repository;
 
   private CustomerResponseTransformer $customerResponseTransformer;
@@ -21,6 +28,9 @@ class CustomerController extends \App\Controller\Controller {
   private CustomerEntityFactory $customerEntityFactory;
 
 
+  /**
+   * @param CustomerRepositoryMySQL<E> $Repository
+   */
   public function __construct(CustomerRepositoryMySQL $Repository, CustomerEntityFactory $CustomerEntityFactory, CustomerResponseTransformer $customerResponseTransformer) {
     $this->repository = $Repository;
     $this->customerEntityFactory = $CustomerEntityFactory;

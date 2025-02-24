@@ -7,12 +7,12 @@ use App\Entity\Entity;
 use App\Mapper\MapperMySQL;
 use App\Repository\Enum\RepositorySourceEnum;
 use Dibi\Result;
-use Dibi\Row;
 
 
 /**
  * @template E of Entity
- * @template M of MapperMySQL
+ * @phpstan-import-type DibiData from \App\Mapper\MapperMySQL
+ * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
  */
 abstract class RepositoryMySQL implements RepositoryInterface {
 
@@ -38,7 +38,7 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
   /**
    * @param string $tableName
-   * @param array<int, array<int, mixed>> $conditions
+   * @param DibiCondition $conditions
    * @return \Dibi\Row|null
    * @throws \Dibi\Exception
    */
@@ -50,9 +50,10 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param MapperMySQL<M, E> $Mapper
+   * @param MapperMySQL<E> $Mapper
    * @param Entity<E> $Entity
    * @param string $tableName
+   * @throws \Dibi\Exception|\App\Mapper\MapperException|RepositoryException
    */
   protected function insertEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
@@ -69,8 +70,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
   /**
    * @param string $tableName
-   * @param array<string, \Dibi\Literal> $data
-   **/
+   * @param DibiData $data
+   * @throws \Dibi\Exception
+   */
   protected function insertRow(string $tableName, array $data): Result {
     $q = "INSERT INTO %n SET %a";
     return $this->db->query($q, $tableName, $data);
@@ -78,9 +80,10 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param MapperMySQL<M, E> $Mapper
+   * @param MapperMySQL<E> $Mapper
    * @param Entity<E> $Entity
    * @param string $tableName
+   * @throws \Dibi\Exception|\App\Mapper\MapperException|RepositoryException
    */
   protected function updateEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
@@ -97,8 +100,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
   /**
    * @param string $tableName
-   * @param array<string, \Dibi\Literal> $data
-   * @param array<string, \Dibi\Literal> $conditions
+   * @param DibiData $data
+   * @param DibiCondition $conditions
+   * @throws \Dibi\Exception
    */
   protected function updateRow(string $tableName, array $data, array $conditions): Result {
     $q = "UPDATE %n SET %a WHERE %and";
@@ -107,9 +111,10 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param M $Mapper
+   * @param MapperMySQL<E> $Mapper
    * @param Entity<E> $Entity
    * @param string $tableName
+   * @throws \Dibi\Exception|\App\Mapper\MapperException
    */
   protected function deleteEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
@@ -119,9 +124,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
   /**
    * @param string $tableName
-   * @param array<int, array{0: string, 1: mixed}> $conditions
+   * @param DibiCondition $conditions
    * @param int $limit
-   * @return int
+   * @return Result
    * @throws \Dibi\Exception
    */
   protected function deleteRow(string $tableName, array $conditions, int $limit = 1): Result {
@@ -135,13 +140,13 @@ abstract class RepositoryMySQL implements RepositoryInterface {
    *
    * @param Entity<E> $Entity
    * @param string $tableName
-   * @param string[] $properties názvy property/názvy sloupců
-   * @param array<int, array{0: string, 1: mixed}> $conditions
+   * @param string[] $propertiesNames názvy property/názvy sloupců
+   * @param DibiCondition $conditions
    * @return void
-   * @throws \Dibi\Exception
+   * @throws \Dibi\Exception|RepositoryException
    */
-  protected function refreshEntity(Entity $Entity, string $tableName, array $properties, array $conditions): void {
-    if(!count($properties)) {
+  protected function refreshEntity(Entity $Entity, string $tableName, array $propertiesNames, array $conditions): void {
+    if(!count($propertiesNames)) {
       throw new RepositoryException("At least one property must be defined in \$properties");
     }
     if(!count($conditions)) {
@@ -154,9 +159,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
       WHERE %and
       LIMIT 1
     ";
-    $Result = $this->db->query($q, $properties, $tableName, $conditions)->fetch();
+    $Result = $this->db->query($q, $propertiesNames, $tableName, $conditions)->fetch();
 
-    foreach($properties as $property) {
+    foreach($propertiesNames as $property) {
       $Entity->{$property} = $Result->{$property};
     }
   }

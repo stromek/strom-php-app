@@ -10,11 +10,11 @@ use App\Entity\Attribute\Storage\StorageInterface;
 use App\Entity\Entity;
 use App\Entity\Property\Property;
 use Dibi\Literal;
-use Dibi\Result;
 
 
 /**
- * @template M
+ * @phpstan-type DibiData array<array-key, Literal>
+ * @phpstan-type DibiCondition array<int, array{0: string, 1: mixed}>
  * @template E of Entity
  */
 abstract class MapperMySQL implements MapperInterface {
@@ -58,7 +58,7 @@ abstract class MapperMySQL implements MapperInterface {
 
   /**
    * @param Entity<E> $Entity
-   * @return array<int, array{0: string, mixed}>
+   * @return DibiCondition
    */
   public function entityToConditions(\App\Entity\Entity $Entity): array {
     $conditions = [];
@@ -66,6 +66,7 @@ abstract class MapperMySQL implements MapperInterface {
     foreach($Entity->getProperties() as $Property) {
       if($this->hasAttribute($Property, Primary::class)) {
         $conditions[] = [$Property->getName()." = ".$this->getPropertyModifier($Property), $this->getPropertyValue($Property)];
+
       }
     }
 
@@ -81,7 +82,7 @@ abstract class MapperMySQL implements MapperInterface {
    * Položky k vytvoření záznamu
    *
    * @param Entity<E> $Entity
-   * @return array<string, Literal>
+   * @return DibiData
    */
   public function entityToInsert(Entity $Entity): array {
     $data = [];
@@ -112,9 +113,11 @@ abstract class MapperMySQL implements MapperInterface {
    * Položky k vytvoření záznamu
    *
    * @param Entity<E> $Entity
-   * @return array<string, Literal>
+   * @return DibiData
    */
   public function entityToUpdate(Entity $Entity): array {
+    $data = [];
+
     foreach($Entity->getProperties() as $Property) {
 
       $isVirtual = $this->hasAttribute($Property, StorageInterface::class, function(StorageInterface $Attribute) {
@@ -142,17 +145,18 @@ abstract class MapperMySQL implements MapperInterface {
   }
 
 
-  public function entityToDelete() {
-
-  }
+//  public function entityToDelete() {
+//
+//  }
 
 
   /**
    * Zda má property atribut dle callbacku
    *
-   * @template AT of AttributeInterface
+   * @template T of AttributeInterface
    * @param Property<E> $Property
-   * @param class-string<AT> $attributeClassName
+   * @param class-string<T> $attributeClassName
+   * @param \Closure|null $Closure
    * @return bool
    **/
   private function hasAttribute(Property $Property, string $attributeClassName, \Closure $Closure = null): bool {
@@ -163,17 +167,16 @@ abstract class MapperMySQL implements MapperInterface {
   /**
    * Nalezeni atributu dle callbacku
    *
-   * @template AT of AttributeInterface
+   * @template T of AttributeInterface
    * @param Property<E> $Property
-   * @param class-string<AT> $attributeClassName
+   * @param class-string<T> $attributeClassName
    * @param \Closure|null $Closure
-   * @return AttributeInterface<AT>[]
+   * @return T[]
    */
   private function findAttributes(Property $Property, string $attributeClassName, \Closure $Closure = null): array {
     $result = [];
 
     foreach($Property->getAttributes($attributeClassName) as $Attribute) {
-
       if(is_null($Closure) OR $Closure($Attribute) === true) {
         $result[] = $Attribute;
       }
@@ -182,37 +185,7 @@ abstract class MapperMySQL implements MapperInterface {
     return $result;
   }
 
-
-
-//  /**
-//   * @template T of Entity
-//   * @param Entity<T> $Entity
-//   * @param ?self::MODE_* $mode
-//   * @return array<string, array{0: string, 1: mixed}>
-//   */
-//  protected function entityTo(Entity $Entity, ?string $mode = null): array {
-//    $data = [];
-////
-////    foreach($Customer->getProperties() as $Property) {
-////      foreach($Property->getAttributes(\App\Entity\Property\Storage\PropertyStorageInterface::class) as $Attribute) {
-////        vd($Attribute->getName() === \App\Entity\Property\Storage\Primary::class);
-////        exit;
-////      }
-////    }
-//
-//    foreach($Entity->getProperties() as $Property) {
-//      $isPrimary =
-//      $modifier = $this->getPropertyModifier($Property);
-//
-//      if($modifier) {
-//        $data[$Property->getName()] = [$modifier, $this->getPropertyValue($Property)];
-//      }
-//    }
-//
-//    return $data;
-//  }
-
-
+  
   /**
    * @param Property<E> $Property
    * @return string|null
@@ -230,7 +203,8 @@ abstract class MapperMySQL implements MapperInterface {
       "float" => "%f",
       "string" => "%s",
       // TODO že to je objekt
-      "DateTimeInterface" => "%dt"
+      "DateTimeInterface" => "%dt",
+      default => throw new MapperException("Unsupported ype: '".$Type->getName()."'. Cannot determine modifier for property ' ".$Property->getName()."'.")
     };
   }
 

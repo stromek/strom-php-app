@@ -8,6 +8,7 @@ use App\Http\Enum\StatusCodeEnum;
 
 class RepositoryException extends \Exception implements \App\Interface\AppErrorInterface {
 
+  const UNKNOWN = 0;
 
   const NOT_FOUND = 404;
 
