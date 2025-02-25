@@ -1,24 +1,22 @@
-import { createRoot } from 'react-dom/client';
+import React from 'react';
 
-import './../css/style.css'
+import { Provider } from 'react-redux'
+import configureStore from "./slice/store.js";
+
+import LayoutComponent from './page/layout/layout.container'
 
 
-(function() {
-  let rootElement = document.getElementById('root');
+import 'normalize.css'
+import '../css/app.scss'
 
-  if(rootElement) {
-    rootElement.remove()
-  }
+const store = configureStore();
 
-  rootElement = document.createElement('div');
-  rootElement.id = 'root';
-  document.body.append(rootElement);
-
-  // Render your React component instead
-  const root = createRoot(rootElement);
-  root.render(
-    <div>
-      Hello world!
-    </div>
+const App = ({ children }) => {
+  return (
+    <Provider store={store}>
+      <LayoutComponent />
+    </Provider>
   );
-})();
+};
+
+export default App;
