@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  
-  <xsl:output method="html" encoding="UTF-8" indent="yes" />
+<xsl:stylesheet
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
 
-  <xsl:template match="/root">
-    <html>
-      <title>404 Not found</title>
-      <body>
-        <h1>Error 404</h1>
-      </body>
-    </html>
+  <xsl:import href="template.html.xsl" />
+
+  <xsl:template name="htmlBody">
+    <h1>Error 404</h1>
   </xsl:template>
 
 </xsl:stylesheet>

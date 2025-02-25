@@ -1,0 +1,20 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-size: 1.3em;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+
+  color: black;
+  text-shadow: 1px 1px 1px #ea6d6d;
+  background: #c25252;
+}
+
+h1 {
+  font-size: 3em;
+}

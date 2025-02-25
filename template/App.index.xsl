@@ -6,9 +6,6 @@
 
   <xsl:import href="template.html.xsl" />
 
-
-  <xsl:template name="htmlBody">
-    <h1>Hello</h1>
-  </xsl:template>
+  <xsl:template name="htmlBody"></xsl:template>
 
 </xsl:stylesheet>
