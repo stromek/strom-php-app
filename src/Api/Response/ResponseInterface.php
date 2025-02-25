@@ -14,4 +14,6 @@ interface ResponseInterface {
 
   public function sendBody(): void;
 
+  
+  public function addHeader(string $name, string $value): void;
 }

@@ -56,7 +56,7 @@ $Router->group("/api/", function(\App\Api\Router\RouteGroup $RouteGroup) {
   $RouteGroup->get("/customer/{id:[0-9]+}/", [\App\Controller\Customer\CustomerController::class, "detail"]);
 });
 
-$Router->get("/", [\App\Controller\Home\HomeController::class, "index"]);
-$Router->get("/*", [\App\Controller\Home\HomeController::class, "error404"]);
+$Router->get("/", [\App\Controller\App\AppController::class, "index"]);
+$Router->get("/*", [\App\Controller\App\AppController::class, "error404"]);
 
 $Router->run()->send();
