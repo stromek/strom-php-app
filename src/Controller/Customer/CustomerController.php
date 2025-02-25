@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Controller\Customer;
 
 
-
+use OpenApi\Attributes as OA;
 use App\Api\Response\ResponseInterface;
 use App\Api\Transformer\CustomerResponseTransformer;
 use App\Entity\CustomerEntity;
@@ -36,12 +36,13 @@ class CustomerController extends \App\Controller\Controller {
     $this->customerEntityFactory = $CustomerEntityFactory;
     $this->customerResponseTransformer = $customerResponseTransformer;
   }
-  
 
+  #[OA\Get(path: '/api/data.json', operationId: 'getData')]
+  #[OA\Response(response: '200', description: 'The data')]
   public function detail(int $id): ResponseInterface {
     $Customer = $this->repository->findByID($id);
 
-    return $this->responseFactory->create($this->customerResponseTransformer->transformCustomer($Customer));
+    return $this->responseFactory->createApiResponse($this->customerResponseTransformer->transformCustomer($Customer));
   }
 
 
@@ -52,7 +53,7 @@ class CustomerController extends \App\Controller\Controller {
     $Customer = $this->customerEntityFactory->createCustomer($data);
     $this->repository->insertCustomer($Customer);
 
-    return $this->responseFactory->create($this->customerResponseTransformer->transformCustomer($Customer));
+    return $this->responseFactory->createApiResponse($this->customerResponseTransformer->transformCustomer($Customer));
   }
 
 
@@ -66,7 +67,7 @@ class CustomerController extends \App\Controller\Controller {
     $this->repository->updateCustomer($Customer);
 
     // @TODO
-    return $this->responseFactory->create(["update" => "OK"]);
+    return $this->responseFactory->createApiResponse(["update" => "OK"]);
   }
 
 
@@ -75,7 +76,7 @@ class CustomerController extends \App\Controller\Controller {
     $this->repository->deleteCustomer($Customer);
 
     // @TODO
-    return $this->responseFactory->create(["deleted" => "OK"]);
+    return $this->responseFactory->createApiResponse(["deleted" => "OK"]);
   }
 
 }

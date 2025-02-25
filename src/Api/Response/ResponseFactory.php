@@ -21,6 +21,17 @@ class ResponseFactory {
 
     return $this->createResponse(
       $statusCodeEnum,
+      $Filter->transform($payload),
+      $Filter->contentType(),
+    );
+  }
+
+
+  public function createApiResponse(mixed $payload, StatusCodeEnum $statusCodeEnum = StatusCodeEnum::STATUS_OK): ResponseInterface {
+    $Filter = $this->createResponseFilter();
+
+    return $this->createResponse(
+      $statusCodeEnum,
       $Filter->transform($this->createResponseStructure(null, null, $payload)),
       $Filter->contentType(),
     );

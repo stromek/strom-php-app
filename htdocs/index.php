@@ -50,6 +50,8 @@ $Router->setErrorHandler(\Exception::class, function(\App\Api\Request\Request $R
 
 
 $Router->group("/api/", function(\App\Api\Router\RouteGroup $RouteGroup) {
+  $RouteGroup->get("/", [\App\Controller\Api\ApiController::class, "index"]);
+
   $RouteGroup->get("/customer/{id:[0-9]+}/", [\App\Controller\Customer\CustomerController::class, "detail"]);
   $RouteGroup->get("/customer/{id:[0-9]+}/", [\App\Controller\Customer\CustomerController::class, "detail"]);
 });

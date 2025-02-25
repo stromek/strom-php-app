@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use OpenApi\Attributes as OA;
 use App\Entity\Attribute\ApiResponse\Visibility;
 use App\Entity\Attribute\Storage\Storage;
 use App\Entity\Attribute\Storage\Primary;
@@ -19,10 +20,16 @@ use App\Entity\Attribute\Value\DefaultValueGenerator;
  * @property string $name
  * @property \DateTime $createdAt
  */
+#[OA\Schema()]
 class CustomerEntity extends Entity {
 
   #[Range(1, null)]
   #[Primary(Primary::AUTO_INCREMENT)]
+  #[OA\Property(
+    property: "id",
+    type: "integer",
+    description: "The ID of the Customer.",
+  )]
   private int $id;
 
 //  #[NotEmpty]

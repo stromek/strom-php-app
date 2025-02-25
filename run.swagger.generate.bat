@@ -1,0 +1,1 @@
+./vendor/bin/openapi src -o public/docs/swagger.yaml
