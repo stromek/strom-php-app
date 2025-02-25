@@ -11,6 +11,11 @@ if(php_sapi_name() !== 'cli-server') {
   $directoryMap = [
     "/public" => realpath(__DIR__ . "/../public")
   ];
+  $mimeTypeMap = [
+    "css" => "text/css",
+    "js" => "text/javascript",
+    "html" => "text/html",
+  ];
 
   $requestFile = $_SERVER['PHP_SELF'] ?? "";
   if(strlen($requestFile)) {
@@ -25,11 +30,12 @@ if(php_sapi_name() !== 'cli-server') {
           exit(0);
         }
 
-        $type = mime_content_type($file);
-        if($type) {
-          header("Content-Type: {$type}");
-          readfile($file, false);
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $mimeType = $mimeTypeMap[$extension] ?? mime_content_type($file);
+        if($mimeType) {
+          header("Content-Type: {$mimeType}");
         }
+        readfile($file, false);
         exit(0);
       }
     }
