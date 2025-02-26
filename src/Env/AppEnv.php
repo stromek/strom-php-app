@@ -22,11 +22,15 @@ abstract class AppEnv {
   /**
    * @return string|array<string, string|null>
    */
-  public static function get(?string $key = null): string|array {
+  public static function get(?string $key = null, bool $fallbackToEnv = true): string|array {
     self::lazyLoad();
 
     if(is_null($key)) {
       return self::$environmentValues;
+    }
+
+    if($fallbackToEnv AND !isset(self::$environmentValues[$key]) AND isset($_ENV[$key])) {
+      return $_ENV[$key];
     }
 
     if(!isset(self::$environmentValues[$key])) {
