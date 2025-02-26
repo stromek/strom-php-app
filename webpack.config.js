@@ -17,6 +17,16 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   devServer: {
+    historyApiFallback: {
+      rewrites: [
+        {
+          // Odchytenme /public/* URL a vratime ji zase zpět
+          from: /^\/public\//, to: function (context){
+            return '/public/'+context.parsedUrl.pathname.replace(/^\/public\//, '')
+          }
+        },
+      ],
+    },
     static: {
       directory : './public',
       publicPath : '/public'
