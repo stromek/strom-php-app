@@ -9,6 +9,7 @@ if(php_sapi_name() !== 'cli-server') {
 
 (function() {
   $directoryMap = [
+    "/favicon.ico" => realpath(__DIR__ . "/../public/favicon.ico"),
     "/public" => realpath(__DIR__ . "/../public")
   ];
   $mimeTypeMap = [
@@ -18,11 +19,11 @@ if(php_sapi_name() !== 'cli-server') {
   ];
 
   $requestFile = $_SERVER['PHP_SELF'] ?? "";
+
   if(strlen($requestFile)) {
     foreach($directoryMap as $prefix => $directory) {
       if(str_starts_with($requestFile, $prefix)) {
-        $file = $directory . DIRECTORY_SEPARATOR . substr($requestFile, strlen($prefix) + 1);
-
+        $file = rtrim($directory . DIRECTORY_SEPARATOR . substr($requestFile, strlen($prefix) + 1), DIRECTORY_SEPARATOR);
 
         if(!file_exists($file) or !is_file($file)) {
           http_response_code(404);

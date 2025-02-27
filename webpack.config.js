@@ -7,7 +7,8 @@ module.exports = {
   entry: './srcClient/index.js',
   plugins: [
     new HtmlWebpackPlugin({
-      title: "strom-php-app"
+      title: "strom-php-app",
+      publicPath : '/'
     })
   ],
   output: {
@@ -21,10 +22,11 @@ module.exports = {
       rewrites: [
         {
           // Odchytenme /public/* URL a vratime ji zase zpět
-          from: /^\/public\//, to: function (context){
+          from: /^\/public\//,
+          to: function (context){
             return '/public/'+context.parsedUrl.pathname.replace(/^\/public\//, '')
           }
-        },
+        }
       ],
     },
     static: {
