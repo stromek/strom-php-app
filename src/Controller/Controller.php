@@ -8,5 +8,8 @@ abstract class Controller {
 
   #[\DI\Attribute\Inject]
   protected \App\Api\Response\ResponseFactory $responseFactory;
+
+  #[\DI\Attribute\Inject]
+  protected \App\Http\Session $session;
   
 }

@@ -1,0 +1,1 @@
+docker-compose up db-dynamodb-local -d

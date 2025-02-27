@@ -6,11 +6,11 @@ use App\Env\AppEnv;
 use Tracy\Debugger;
 
 
-include __DIR__.'/../vendor/autoload.php';
-include __DIR__.'/../boot/bootstrap.php';
+require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../boot/bootstrap.php';
+
 
 $Container = \App\Factory\ContainerFactory::create();
-
 
 /** @var Router $Router */
 $Router = $Container->get(Router::class);

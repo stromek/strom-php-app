@@ -16,6 +16,8 @@ interface RequestInterface {
    */
   public function getQuery(string $key): null|string|array;
 
+  public function getCookie(string $name): ?string;
+
   
   public function getHeaderLine(string $header): string;
 }

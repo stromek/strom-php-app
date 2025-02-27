@@ -1,6 +1,7 @@
 .idea
 .env
 .serverless
+.docker
 phpstan.neon
 
 

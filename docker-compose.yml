@@ -2,8 +2,8 @@ name: ${PROJECT_NAME}
 
 services:
   api:
-    container_name: "${PROJECT_NAME}-api"
     image: bref/php-82-fpm-dev:2
+    container_name: "${PROJECT_NAME}-api"
     ports: ['8001:8000']
     volumes:
       - .:/var/task
@@ -15,8 +15,8 @@ services:
       DB_MYSQL_HOST: "${PROJECT_NAME}-db-mysql:3306"
 
   db-mysql:
-    container_name: "${PROJECT_NAME}-db-mysql"
     image: mysql:8.4.4
+    container_name: "${PROJECT_NAME}-db-mysql"
     environment:
       MYSQL_ROOT_PASSWORD: OxAk5S-vS3_
       MYSQL_USER: ${DB_MYSQL_USER}
@@ -28,6 +28,20 @@ services:
       - db-mysql-data:/var/lib/mysql
       - ./config/mysql:/etc/mysql/conf.d
       - ./init/mysql:/docker-entrypoint-initdb.d:ro
+
+  db-dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: "${PROJECT_NAME}-db-dynamodb-local"
+    ports:
+      - "8010:8000"
+    environment:
+      - AWS_REGION=${DB_DYNAMO_REGION}
+      - AWS_ACCESS_KEY_ID=${DB_DYNAMO_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${DB_DYNAMO_SECRET_ACCESS_KEY}
+    volumes:
+      - "./.docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
 
 volumes:
   db-mysql-data:
