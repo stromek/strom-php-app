@@ -10,6 +10,6 @@ abstract class Controller {
   protected \App\Api\Response\ResponseFactory $responseFactory;
 
   #[\DI\Attribute\Inject]
-  protected \App\Http\Session $session;
+  protected \App\Http\Session\Session $session;
   
 }
