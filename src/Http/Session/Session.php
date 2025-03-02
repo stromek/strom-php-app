@@ -112,13 +112,24 @@ class Session {
   }
 
 
+  public static function isActive(): bool {
+    return session_status() == PHP_SESSION_ACTIVE;
+  }
+
+  /**
+   * Vypnuté konfigurací
+   */
+  public static function isDisabled(): bool {
+    return session_status() == PHP_SESSION_DISABLED;
+  }
+
+
   private function init(): void {
-    // Již spuštěné
-    if(session_status() == PHP_SESSION_ACTIVE) {
+    if(self::isActive()) {
       return;
     }
-    // Vypnuté konfigurací
-    if(session_status() == PHP_SESSION_DISABLED) {
+
+    if(self::isDisabled()) {
       throw new \RuntimeException("Session is disabled by configuration.");
     }
 
@@ -131,7 +142,6 @@ class Session {
 
     session_start();
   }
-
 
   /**
    * @throws \App\Http\HttpException

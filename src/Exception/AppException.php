@@ -12,4 +12,6 @@ class AppException extends \Exception implements \App\Interface\AppErrorInterfac
   public function getStatusCodeEnum(): StatusCodeEnum {
     return StatusCodeEnum::STATUS_INTERNAL_SERVER_ERROR;
   }
+
+  
 }

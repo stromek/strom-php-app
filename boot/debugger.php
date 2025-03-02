@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\Debugger\AppPanel;
+use App\Debugger\SessionPanel;
 use App\Env\AppEnv;
 use Tracy\Debugger;
 
@@ -145,8 +147,13 @@ function vd(mixed $var): void {
 }
 
 (function() {
+
   if(AppEnv::isDeveloper()) {
     $Container = \App\Factory\ContainerFactory::create();
+
+    $Bar = Debugger::getBar();
+    $Bar->addPanel(new AppPanel($Container));
+    $Bar->addPanel(new SessionPanel($Container));
 
     $Panel = new Dibi\Bridges\Tracy\Panel();
     $Panel->register($Container->get(\Dibi\Connection::class));
