@@ -10,7 +10,7 @@ use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
 
 
-class RouteGroup {
+class RouteGroup implements RouteDefinitionInterface {
 
   private string $url;
 
@@ -22,6 +22,30 @@ class RouteGroup {
     $this->router = $Router;
 
     $handler($this);
+  }
+
+
+  /**
+   * Odchyceni chybi v rámci RouteGroup
+   *
+   * @param class-string<\Exception> $class
+   * @return void
+   */
+  public function setErrorHandler(string $class, \Closure $Closure): void {
+    $this->router->setErrorHandler($class, $Closure, function(\Throwable $Exception, array $options = []) {
+      /** @var array{route: ?Route, request: ?RequestInterface} $options */
+      $Request = $options['request'] ?? null;
+      if(!$Request) {
+        return false;
+      }
+
+      return str_starts_with($Request->getUri()->getPath(), $this->url);
+    });
+  }
+
+
+  public function group(string $url, \Closure $handler): RouteGroup {
+    return new RouteGroup($this->router, $this->makeURL($url), $handler);
   }
 
 

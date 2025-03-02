@@ -9,13 +9,13 @@ use App\Api\Request\Request;
 use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
+use Tracy\Debugger;
 
 
 /**
  * Maska URL může obsahovat argumentu ve formátu {name:regex} nebo wildcard *
  */
-class Router {
-
+class Router implements RouteDefinitionInterface {
 
   /**
    * @var Route[]
@@ -23,13 +23,14 @@ class Router {
   private array $routes = [];
 
   /**
-   * @var array<class-string<\Exception>, \Closure>
+   * @var array<class-string<\Exception>, array<int, array{handler: \Closure, filter: ?\Closure}>>
    */
   private array $errorHandlers = [];
 
   private RequestInterface $request;
 
   private RouteHandlerFactory $routeHandlerFactory;
+
 
   public function __construct(RequestInterface $Request, RouteHandlerFactory $RouteHandlerFactory) {
     $this->request = $Request;
@@ -57,13 +58,13 @@ class Router {
     return $this->createRoute(MethodEnum::POST, $url, $handler);
   }
 
+
   /**
    * @param \Closure|array{0: class-string, 1: string} $handler
    */
   public function put(string $url, \Closure|array $handler): Route {
     return $this->createRoute(MethodEnum::PUT, $url, $handler);
   }
-
 
 
   /**
@@ -85,8 +86,12 @@ class Router {
   /**
    * @param class-string<\Exception> $class
    */
-  public function setErrorHandler(string $class, \Closure $Closure): void {
-    $this->errorHandlers[$class] = $Closure;
+  public function setErrorHandler(string $class, \Closure $Closure, ?\Closure $Filter = null): void {
+    $this->errorHandlers[$class] ??= [];
+    $this->errorHandlers[$class][] = [
+      "handler" => $Closure,
+      "filter" => $Filter,
+    ];
   }
 
 
@@ -94,20 +99,22 @@ class Router {
    * @throws RouterUncaughtExceptionException
    */
   public function run(): ResponseInterface {
+    $Request = $this->request;
+
     try {
-      $Route = $this->findRouteByRequest($this->request);
+      $Route = $this->findRouteByRequest($Request);
     }catch(\Exception $e) {
-      return $this->catchError($e);
+      return $this->catchError($e, ["request" => $Request]);
     }
 
     if(!$Route) {
-      return $this->catchError(new RouterNotFoundException("No route found"));
+      return $this->catchError(new RouterNotFoundException("No route found"), ["request" => $Request]);
     }
 
     try {
-      return $Route->run($this->request);
+      return $Route->run($Request);
     }catch(\Exception $e) {
-      return $this->catchError($e);
+      return $this->catchError($e, ["request" => $Request, "route" => $Route]);
     }
   }
 
@@ -131,16 +138,26 @@ class Router {
 
 
   /**
+   * @param \Throwable $Exception
+   * @param array<array-key, mixed> $options
+   * @return ResponseInterface
    * @throws RouterUncaughtExceptionException
    */
-  private function catchError(\Throwable $Exception): ResponseInterface {
-    foreach($this->errorHandlers as $class => $errorHandler) {
-      if (is_subclass_of($Exception::class, $class) OR $class === $Exception::class) {
-        return $errorHandler($this->request, $Exception);
+  private function catchError(\Throwable $Exception, array $options = []): ResponseInterface {
+    foreach($this->errorHandlers as $class => $handlers) {
+      // Neni shoda třidy vyjímky
+      if($class !== $Exception::class AND !is_subclass_of($Exception::class, $class)) {
+        continue;
+      }
+
+      foreach($handlers as ["handler" => $handler, "filter" => $filter]) {
+        if(!$filter OR $filter($Exception, $options)) {
+          return $handler($this->request, $Exception);
+        }
       }
     }
 
-    throw new RouterUncaughtExceptionException("Uncaught exception '".get_class($Exception)."'. Use ".self::class."::setErrorHandler() to catch exception.", 0, $Exception);
+    throw new RouterUncaughtExceptionException("Uncaught exception '".$Exception::class."' (".$Exception->getMessage()."). Use ".self::class."::setErrorHandler() to catch exception.", 0, $Exception);
   }
 
 
