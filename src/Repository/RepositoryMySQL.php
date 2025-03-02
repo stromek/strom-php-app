@@ -50,6 +50,18 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
+   * @param string $tableName
+   * @param DibiCondition $conditions
+   * @return \Dibi\Row[]
+   */
+  protected function findAll(string $tableName, array $conditions): array {
+    $q = "SELECT * FROM %n WHERE %and";
+
+    return $this->db->query($q, $tableName, $conditions)->fetchAll();
+  }
+
+
+  /**
    * @param MapperMySQL<E> $Mapper
    * @param Entity<E> $Entity
    * @param string $tableName

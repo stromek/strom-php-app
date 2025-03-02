@@ -1,13 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Repository\Customer;
+namespace App\Repository;
 
 use App\Entity\CustomerEntity;
-use App\Entity\Entity;
-use App\Mapper\Customer\CustomerMapperMySQL;
-use App\Repository\RepositoryException;
-use App\Repository\RepositoryMySQL;
+use App\Mapper\CustomerMapperMySQL;
 use Dibi\Connection;
 
 
@@ -20,7 +17,7 @@ class CustomerRepositoryMySQL extends RepositoryMySQL {
   /**
    * @var CustomerMapperMySQL<E>
    */
-  private CustomerMapperMySQL $mapper;
+  private \App\Mapper\CustomerMapperMySQL $mapper;
 
   /**
    * @param Connection $db

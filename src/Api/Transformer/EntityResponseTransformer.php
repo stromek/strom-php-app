@@ -15,10 +15,13 @@ class EntityResponseTransformer implements ResponseTransformerInterface {
   /**
    * @template E of Entity
    * @param Entity<E> $Entity
-   * @return array<array-key, mixed>
+   * @return array{version: ?string, entity: string, attributes: array<array-key, mixed>}
    */
   public function transformEntity(Entity $Entity, string $version = null): array {
     $response = [
+      "version" => $version,
+      "entity" => $Entity::class,
+      "attributes" => []
     ];
 
     foreach($Entity->getProperties() as $Property) {
@@ -32,8 +35,24 @@ class EntityResponseTransformer implements ResponseTransformerInterface {
       }
 
       if($isVisible OR $visibilityList->count() === 0) {
-        $response[$Property->getName()] = $Property->getValueSafe();
+        $response['attributes'][$Property->getName()] = $Property->getValueSafe();
       }
+    }
+
+    return $response;
+  }
+
+
+  /**
+   * @template E of Entity
+   * @param Entity<E>[] $entities
+   * @return array<array-key, array{version: ?string, entity: string, attributes: array<array-key, mixed>}>
+   */
+  public function transformEntityList(array $entities, string $version = null): array {
+    $response = [];
+
+    foreach($entities as $Entity) {
+      $response[] = $this->transformEntity($Entity, $version);
     }
 
     return $response;

@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 
+use App\Http\Enum\StatusCodeEnum;
+
+
 /**
  * @phpstan-type AppHtmlElements array<int, array{elementName: string, attributes: array<string, string>, content: string}>
  */
@@ -72,7 +75,7 @@ class HTMLController extends Controller {
   }
 
 
-  protected function renderHTML(string $stylesheet): \App\Api\Response\ResponseInterface {
+  protected function renderHTML(string $stylesheet, StatusCodeEnum $statusCodeEnum = StatusCodeEnum::STATUS_OK): \App\Api\Response\ResponseInterface {
     $this->xml->addData("head", [
       "title" => $this->title,
       "elements" => $this->headElements,
@@ -82,7 +85,7 @@ class HTMLController extends Controller {
       "elements" => $this->bodyElements,
     ]);
 
-    $Response = $this->responseFactory->createResponseFromXML($this->xml, TEMPLATE_DIR.DIRECTORY_SEPARATOR.$stylesheet);
+    $Response = $this->responseFactory->createResponseFromXML($this->xml, TEMPLATE_DIR.DIRECTORY_SEPARATOR.$stylesheet, $statusCodeEnum);
     $Response->addHeader("Content-Type", "text/html");
     return $Response;
   }

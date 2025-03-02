@@ -19,6 +19,7 @@ class AppController extends \App\Controller\HTMLController {
     $this->setTitle("APP");
     $this->addScriptBody("/dist/bundle.js");
 
+
     return $this->renderHTML("App.index.xsl");
   }
 
@@ -27,7 +28,8 @@ class AppController extends \App\Controller\HTMLController {
     $this->setTitle("Error 404");
     $this->addStyle("/css/appError.css");
 
-    return $this->renderHTML("App.error404.xsl");
+    return $this->renderHTML("App.error404.xsl", StatusCodeEnum::STATUS_NOT_FOUND);
   }
+
 
 }

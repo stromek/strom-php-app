@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Mapper\Customer;
+namespace App\Mapper;
 
 use App\Entity\Factory\CustomerEntityFactory;
-use App\Mapper\MapperMySQL;
 
 
 /**
