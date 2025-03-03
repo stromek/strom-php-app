@@ -25,8 +25,7 @@ abstract class BasePanel implements \Tracy\IBarPanel {
     return null;
   }
 
-
-  function getPanel(): string {
+  public function getPanel(): string {
     $content = $this->getTabContent();
 
     if(!$content) {
@@ -42,11 +41,12 @@ abstract class BasePanel implements \Tracy\IBarPanel {
 
   public function getTab(): ?string {
     $name = $this->getTabName();
-    $icon = $this->getTabIcon();
 
     if(!$name) {
       return null;
     }
+
+    $icon = $this->getTabIcon();
 
     return '
       <span title="">
