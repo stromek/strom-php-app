@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use OpenApi\Attributes as OA;
 use App\Entity\Attribute\PropertyException;
 use App\Entity\Property\Property;
 use App\Entity\Property\PropertyStorage;

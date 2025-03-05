@@ -37,9 +37,27 @@ class CustomerController extends \App\Controller\Api\ApiController {
   }
 
 
-
-  #[OA\Get(path: '/api/customer/', operationId: 'getData')]
-  #[OA\Response(response: '200', description: 'The data')]
+  #[OA\Get(
+    path: '/api/customer/',
+    description: 'Customer detail of current user',
+    tags: ['Customer'],
+    responses: [
+      new OA\Response(ref: "#/components/responses/401", response: 401),
+      new OA\Response(ref: "#/components/responses/500", response: 500),
+      new OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(allOf: [
+          new OA\Schema(ref: "#/components/schemas/ResponseEntity"),
+          new OA\Schema(properties: [
+            new OA\Property(property: "payload", properties: [
+              new OA\Property(property : "attributes", ref: "#/components/schemas/CustomerEntity")
+            ])
+          ])
+        ]),
+      ),
+    ]
+  )]
   public function detail(): ResponseInterface {
     $Customer = $this->customerRepo->findByID($this->getCurrentCustomerID());
 
@@ -47,6 +65,21 @@ class CustomerController extends \App\Controller\Api\ApiController {
   }
 
 
+
+  #[OA\Get(
+    path: '/api/customer/users/',
+    description: 'List of all users under customer',
+    tags: ['Customer', 'User'],
+    responses: [
+      new OA\Response(ref: "#/components/responses/401", response: 401),
+      new OA\Response(ref: "#/components/responses/500", response: 500),
+      new OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(ref: "#/components/schemas/UserEntityList"),
+      )
+    ]
+  )]
   public function listOfUsers(): ResponseInterface {
     $users = $this->userRepo->findAllByCustomerID($this->getCurrentCustomerID());
 
@@ -56,6 +89,35 @@ class CustomerController extends \App\Controller\Api\ApiController {
   }
 
 
+
+  #[OA\Get(
+    path: '/api/customer/user/{hash}/',
+    description: 'Detail of customer user',
+    tags: ['User'],
+    responses: [
+      new OA\Response(ref: "#/components/responses/401", response: 401),
+      new OA\Response(ref: "#/components/responses/500", response: 500),
+      new OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(allOf: [
+          new OA\Schema(ref: "#/components/schemas/ResponseEntity"),
+          new OA\Schema(properties: [
+            new OA\Property(property: "payload", properties: [
+              new OA\Property(property : "attributes", ref: "#/components/schemas/UserEntity")
+            ])
+          ])
+        ]),
+      ),
+    ]
+  )]
+  #[OA\Parameter(
+    name: 'hash',
+    description: 'UserEntity hash',
+    in: 'path',
+    required: true,
+    schema: new OA\Schema(ref: "#/components/schemas/UserEntityHash")
+  )]
   public function userDetail(string $hash): ResponseInterface {
     $User = $this->userRepo->findByCustomerIDAndHash($this->getCurrentCustomerID(), $hash);
 

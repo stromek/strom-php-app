@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use OpenApi\Attributes as OA;
 use App\Entity\Attribute\ApiResponse\Visibility;
 use App\Entity\Attribute\Storage\Primary;
 use App\Entity\Attribute\Storage\Virtual;
@@ -21,6 +22,14 @@ use App\Entity\Attribute\Value\DefaultValue;
  * @property string $message
  * @property \DateTime $createdAt
  */
+#[OA\Schema(
+  schema: "MessageEntity",
+  properties: [
+    new OA\Property(type: "string", property: "thread_hash"),
+    new OA\Property(type: "string", property: "user_hash"),
+  ],
+  type: "object"
+)]
 class MessageEntity extends Entity {
 
   #[Range(1, null)]
@@ -42,12 +51,15 @@ class MessageEntity extends Entity {
 
   #[Length(10, 10)]
   #[Virtual]
+  #[OA\Property(description: "Unikátní hash zprávy v rámci threadu", example: "yhzTz2ie5z")]
   private string $hash;
 
   #[NotEmpty]
+  #[OA\Property(description: "Obsah zpravy ve formátu HTML", example: "Toto je zpráva")]
   private string $message;
 
   #[DefaultValue(DefaultValue::NOW)]
+  #[OA\Property(ref: "#/components/schemas/DateTimeInterface")]
   private \DateTimeInterface $createdAt;
 
 }
