@@ -5,8 +5,8 @@ import configureStore from "./slice/store.js";
 
 import LayoutComponent from './page/layout/layout.container'
 
-
 import 'normalize.css'
+import '../css/normalize.scss'
 import '../css/app.scss'
 
 const store = configureStore();

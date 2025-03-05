@@ -2,6 +2,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import {combineReducers} from 'redux'
 
 
+// import userReducer from './user/user.reducers';
 import controlReducer from './control/control.reducers.js';
 import appReducer from './app/app.reducers.js';
 

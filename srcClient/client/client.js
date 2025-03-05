@@ -22,5 +22,7 @@ import App from "./app/app.jsx";
 
 
 if (module.hot) {
+  console.groupEnd();
+  console.group("Reload");
   module.hot.accept();
 }
