@@ -17,6 +17,9 @@ interface RouteDefinitionInterface {
   public function setErrorHandler(string $class, \Closure $Closure): void;
 
 
+  public function addMiddleware(\App\Middleware\MiddlewareInterface $Middleware): void;
+
+
   public function group(string $url, \Closure $handler): RouteGroup;
 
 

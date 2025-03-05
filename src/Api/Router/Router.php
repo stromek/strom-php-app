@@ -9,6 +9,7 @@ use App\Api\Request\Request;
 use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
+use App\Middleware\MiddlewareInterface;
 use Tracy\Debugger;
 
 
@@ -27,6 +28,11 @@ class Router implements RouteDefinitionInterface {
    */
   private array $errorHandlers = [];
 
+  /**
+   * @var array<int, array{middleware: MiddlewareInterface, filter: ?\Closure}>
+   */
+  private array $middlewares = [];
+
   private RequestInterface $request;
 
   private RouteHandlerFactory $routeHandlerFactory;
@@ -35,6 +41,13 @@ class Router implements RouteDefinitionInterface {
   public function __construct(RequestInterface $Request, RouteHandlerFactory $RouteHandlerFactory) {
     $this->request = $Request;
     $this->routeHandlerFactory = $RouteHandlerFactory;
+  }
+
+  public function addMiddleware(MiddlewareInterface $Middleware, ?\Closure $Filter = null): void {
+    $this->middlewares[] = [
+      "middleware" => $Middleware,
+      "filter" => $Filter,
+    ];
   }
 
 
@@ -116,7 +129,9 @@ class Router implements RouteDefinitionInterface {
     }
 
     $FilterPayload->route = $Route;
+
     try {
+      $this->applyMiddlewares($Request, $FilterPayload);
       return $Route->run($Request);
 
     }catch(\Exception $e) {
@@ -145,8 +160,31 @@ class Router implements RouteDefinitionInterface {
 
 
   /**
-   * @param \Throwable $Exception
-   * @param array<array-key, mixed> $options
+   * @param RequestInterface<array-key, mixed> $Request
+   * @return void
+   */
+  private function applyMiddlewares(RequestInterface $Request, RouteFilterPayload $Payload): void {
+    $next = function() {
+    };
+
+    foreach (array_reverse($this->middlewares) as ["middleware" => $Middleware, "filter" => $Filter]) {
+      /** @var MiddlewareInterface $Middleware */
+      /** @var ?\Closure $Filter */
+
+      if(!$Filter OR $Filter($Payload)) {
+        $current = $next;
+        $next = function (RequestInterface $Request) use ($Middleware, $current): void {
+          $Middleware->handle($Request, $current);
+        };
+      }
+    }
+
+    // Spuštění middleware řetězce
+    $next($Request);
+  }
+
+
+  /**
    * @return ResponseInterface
    * @throws RouterUncaughtExceptionException
    */

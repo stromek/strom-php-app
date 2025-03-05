@@ -8,6 +8,7 @@ namespace App\Api\Router;
 use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
+use App\Middleware\MiddlewareInterface;
 
 
 class RouteGroup implements RouteDefinitionInterface {
@@ -34,6 +35,9 @@ class RouteGroup implements RouteDefinitionInterface {
   public function setErrorHandler(string $class, \Closure $Closure): void {
     $this->router->setErrorHandler($class, $Closure, $this->filterRequestHandler(...));
   }
+
+  public function addMiddleware(MiddlewareInterface $Middleware, ?\Closure $Filter = null): void {
+    $this->router->addMiddleware($Middleware, $this->filterRequestHandler(...));
   }
 
 
