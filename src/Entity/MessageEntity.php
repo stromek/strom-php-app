@@ -4,49 +4,50 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Entity\Attribute\ApiResponse\Visibility;
-use App\Entity\Attribute\Storage\Virtual;
-use OpenApi\Attributes as OA;
 use App\Entity\Attribute\Storage\Primary;
-use App\Entity\Attribute\Validator\Length;
+use App\Entity\Attribute\Storage\Virtual;
+use App\Entity\Attribute\Validator\NotEmpty;
 use App\Entity\Attribute\Validator\Range;
 use App\Entity\Attribute\Value\DefaultValue;
 
 
 /**
- * @extends Entity<CustomerEntity>
+ * @extends Entity<MessageEntity>
  * @property int $id
- * @property string $clientKey
- * @property string $authToken
- * @property string $name
- * @property bool $isActive
+ * @property int $thread_id
+ * @property int $customer_id
+ * @property int $user_id
+ * @property string $hash
+ * @property string $message
  * @property \DateTime $createdAt
  */
-#[OA\Schema]
-class CustomerEntity extends Entity {
+class MessageEntity extends Entity {
 
   #[Range(1, null)]
   #[Primary(Primary::AUTO_INCREMENT)]
   #[Visibility(Visibility::HIDDEN)]
   private int $id;
 
-  #[Length(50, 50)]
+  #[Range(1, null)]
   #[Visibility(Visibility::HIDDEN)]
-  #[Virtual]
-  private string $clientKey;
+  private int $thread_id;
 
-  #[Length(50, 50)]
+  #[Range(1, null)]
   #[Visibility(Visibility::HIDDEN)]
-  #[Virtual]
-  private string $authToken;
+  private int $customer_id;
 
-//  #[NotEmpty]
-  #[Length(min: 1, max: 100)]
-  private string $name;
-  
-  private bool $isActive = true;
+  #[Range(1, null)]
+  #[Visibility(Visibility::HIDDEN)]
+  private int $user_id;
+
+  #[Length(10, 10)]
+  #[Virtual]
+  private string $hash;
+
+  #[NotEmpty]
+  private string $message;
 
   #[DefaultValue(DefaultValue::NOW)]
-//  #[Storage(Storage::AUTO_REFRESH)]
   private \DateTimeInterface $createdAt;
 
 }

@@ -17,10 +17,18 @@ class AppController extends \App\Controller\HTMLController {
 
   public function index(): \App\Api\Response\ResponseInterface {
     $this->setTitle("APP");
-    $this->addScriptBody("/dist/bundle.js");
-
+    $this->addScriptBody("/app/client/client.js");
 
     return $this->renderHTML("App.index.xsl");
+  }
+
+  public function example(): \App\Api\Response\ResponseInterface {
+    $this->setTitle("Example");
+
+    $this->xml->addData("clientKey", "aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR");
+    $this->xml->addData("snippetUrl", "http://localhost:8080/snippet.js");
+
+    return $this->renderHTML("App.example.xsl");
   }
 
 

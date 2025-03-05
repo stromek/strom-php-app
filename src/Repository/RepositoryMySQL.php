@@ -52,12 +52,21 @@ abstract class RepositoryMySQL implements RepositoryInterface {
   /**
    * @param string $tableName
    * @param DibiCondition $conditions
+   * @param array<mixed> $orderBy
    * @return \Dibi\Row[]
    */
-  protected function findAll(string $tableName, array $conditions): array {
-    $q = "SELECT * FROM %n WHERE %and";
+  protected function findAll(string $tableName, array $conditions, array $orderBy = []): array {
+    $orderBySql = [];
+    foreach($orderBy as $column) {
+      $orderBySql[] = $this->db->translate($column);
+    }
 
-    return $this->db->query($q, $tableName, $conditions)->fetchAll();
+    return $this->db->query(
+      "SELECT * FROM %n WHERE %and %SQL",
+      $tableName,
+      $conditions,
+      (count($orderBySql) ? "ORDER BY " . implode(", ", $orderBySql) : ""))
+    ->fetchAll();
   }
 
 

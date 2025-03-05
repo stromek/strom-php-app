@@ -5,26 +5,23 @@ namespace App\Controller\Api;
 
 use App\Api\Response\ResponseInterface;
 use App\Exception\AppException;
-use OpenApi\Attributes as OA;
 
 
-#[OA\Info(title: "My First API", version: "0.1")]
+/**
+ * @phpstan-import-type RequestCustomer from \App\Middleware\AuthenticationCustomerMiddleware
+ */
 class ApiController extends \App\Controller\Controller {
 
 
-  private ?\OpenApi\Annotations\OpenApi $openApi;
-
-  public function __construct() {
-    $this->openApi = \OpenApi\Generator::scan([SRC_DIR]);
+  /**
+   * @return RequestCustomer
+   */
+  protected function getCurrentCustomer(): array {
+    return $this->request['customer'];
   }
 
-  public function index(): \App\Api\Response\ResponseInterface {
-
-    return $this->responseFactory->createResponse(
-      \App\Http\Enum\StatusCodeEnum::STATUS_OK,
-      $this->openApi->toJson(),
-      "application/json"
-    );
+  protected function getCurrentCustomerID(): int {
+    return $this->getCurrentCustomer()['id'];
   }
 
 

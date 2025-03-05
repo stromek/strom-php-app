@@ -10,11 +10,13 @@ return [
   // Session handler, ktery se stara o ukladani dat
   SessionHandlerInterface::class => DI\autowire(\App\Http\Session\Handler\SessionHandlerDynamoDB::class),
 
+  
   // @TODO nahradit jinym session handlerem
   // Storage session, jakym způsobem se zapisuje
   SessionStorageInterface::class => function (): SessionStorageInterface {
     return new \App\Http\Session\Storage\SessionStorageDefault();
   },
+
 
   Session::class => function (ContainerInterface $Container): Session {
     return new Session(

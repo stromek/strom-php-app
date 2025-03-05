@@ -9,6 +9,7 @@ use Dibi\Connection;
 
 
 /**
+ * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
  * @template E of CustomerEntity
  * @extends RepositoryMySQL<E>
  */
@@ -19,6 +20,7 @@ class CustomerRepositoryMySQL extends RepositoryMySQL {
    */
   private \App\Mapper\CustomerMapperMySQL $mapper;
 
+
   /**
    * @param Connection $db
    * @param CustomerMapperMySQL<E> $Mapper
@@ -28,17 +30,38 @@ class CustomerRepositoryMySQL extends RepositoryMySQL {
 
     $this->mapper = $Mapper;
   }
+  
+
+  public function findByClientKey(string $clientKey): CustomerEntity {
+    return $this->findByCondition([["clientKey = %s", $clientKey]]);
+  }
+
+
+  public function findByAuthToken(string $authToken): CustomerEntity {
+    return $this->findByCondition([["authToken = %s", $authToken], ["authToken != ''"]]);
+  }
 
 
   public function findByID(int $id): CustomerEntity {
-    $Row = $this->findRow("customer", [["id = %i", $id]]);
+    return $this->findByCondition([["id = %i", $id]]);
+  }
+
+
+  /**
+   * @param DibiCondition $conditions
+   * @throws RepositoryException
+   * @throws \Dibi\Exception
+   */
+  private function findByCondition(array $conditions): CustomerEntity {
+    $Row = $this->findRow("customer", $conditions);
 
     if(!$Row) {
-      throw new RepositoryException("Customer ID #{$id} not found.", RepositoryException::NOT_FOUND);
+      throw new RepositoryException("Customer not found.", RepositoryException::NOT_FOUND);
     }
 
     return $this->mapper->createCustomerEntity($Row);
   }
+
 
 
   public function insertCustomer(CustomerEntity $Customer): void {

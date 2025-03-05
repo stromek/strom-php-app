@@ -14,7 +14,7 @@ use Dibi\Literal;
 
 /**
  * @phpstan-type DibiData array<array-key, Literal>
- * @phpstan-type DibiCondition array<int, array{0: string, 1: mixed}>
+ * @phpstan-type DibiCondition array<int, array{0: string, 1: mixed}|array<int, string>>
  * @template E of Entity
  */
 abstract class MapperMySQL implements MapperInterface {

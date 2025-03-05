@@ -10,6 +10,9 @@ use DI\Attribute\Inject;
 abstract class Controller {
 
   #[Inject]
+  protected \App\Api\Request\RequestInterface $request;
+
+  #[Inject]
   protected \App\Api\Response\ResponseFactory $responseFactory;
 
   #[Inject]

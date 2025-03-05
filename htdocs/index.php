@@ -1,8 +1,6 @@
 <?php
 declare(strict_types=1);
 
-use App\Api\Request\Request;
-use App\Api\Response\ResponseInterface;
 use App\Api\Router\RouteDefinitionInterface;
 use App\Api\Router\RouteGroup;
 use App\Api\Router\Router;
@@ -18,6 +16,7 @@ $Container = \App\Factory\ContainerFactory::create();
 $Router = $Container->get(Router::class);
 
 
+
 $loadRouteRule = function(string $filename, ?RouteDefinitionInterface $RouteDefinition = null) use ($Container, $Router): void {
   $filepath = __DIR__.DIRECTORY_SEPARATOR."RouteRules".DIRECTORY_SEPARATOR.$filename;
   if(!file_exists($filepath)) {
@@ -28,9 +27,14 @@ $loadRouteRule = function(string $filename, ?RouteDefinitionInterface $RouteDefi
 };
 
 
-// API V1
-$Router->group("/api/v1/", function(RouteGroup $RouteGroup) use ($loadRouteRule){
-  $loadRouteRule("RouteRule.api.1.php", $RouteGroup);
+// API
+$Router->group("/api/", function(RouteGroup $RouteGroup) use ($loadRouteRule){
+  $loadRouteRule("RouteRule.api.php", $RouteGroup);
+});
+
+// Dokumentace a swagger
+$Router->group("/docs/", function(RouteGroup $RouteGroup) use ($loadRouteRule){
+  $loadRouteRule("RouteRule.docs.php", $RouteGroup);
 });
 
 // Zakladni APP

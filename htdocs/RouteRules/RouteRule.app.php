@@ -14,10 +14,6 @@ use App\Exception\AppException;
 
 
 return function (Container $Container, RouteDefinitionInterface $Router): void {
-  $Router->get("/", [AppController::class, "index"]);
-  $Router->get("/*", [AppController::class, "error404"]);
-
-
   $Router->setErrorHandler(\Exception::class, function(Request $Request, \Exception $Exception) use ($Container): ResponseInterface {
     if(\App\Env\AppEnv::displayInternalError()) {
       Debugger::getBlueScreen()->render($Exception);
@@ -31,5 +27,9 @@ return function (Container $Container, RouteDefinitionInterface $Router): void {
     );
   });
 
+
+  $Router->get("/", [AppController::class, "index"]);
+  $Router->get("/example.html", [AppController::class, "example"]);
+  $Router->get("/*", [AppController::class, "error404"]);
 };
 
