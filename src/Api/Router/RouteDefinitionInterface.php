@@ -14,7 +14,7 @@ interface RouteDefinitionInterface {
    * @param class-string<\Exception> $class
    * @return void
    */
-  public function setErrorHandler(string $class, \Closure $Closure): void ;
+  public function setErrorHandler(string $class, \Closure $Closure): void;
 
 
   public function group(string $url, \Closure $handler): RouteGroup;

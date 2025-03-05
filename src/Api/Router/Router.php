@@ -101,20 +101,27 @@ class Router implements RouteDefinitionInterface {
   public function run(): ResponseInterface {
     $Request = $this->request;
 
+    $FilterPayload = new RouteFilterPayload($Request);
+
     try {
       $Route = $this->findRouteByRequest($Request);
     }catch(\Exception $e) {
-      return $this->catchError($e, ["request" => $Request]);
+      $FilterPayload->exception = $e;
+      return $this->catchError($FilterPayload);
     }
 
     if(!$Route) {
-      return $this->catchError(new RouterNotFoundException("No route found"), ["request" => $Request]);
+      $FilterPayload->exception = new RouterNotFoundException("No route found");
+      return $this->catchError($FilterPayload);
     }
 
+    $FilterPayload->route = $Route;
     try {
       return $Route->run($Request);
+
     }catch(\Exception $e) {
-      return $this->catchError($e, ["request" => $Request, "route" => $Route]);
+      $FilterPayload->exception = $e;
+      return $this->catchError($FilterPayload);
     }
   }
 
@@ -143,7 +150,12 @@ class Router implements RouteDefinitionInterface {
    * @return ResponseInterface
    * @throws RouterUncaughtExceptionException
    */
-  private function catchError(\Throwable $Exception, array $options = []): ResponseInterface {
+  private function catchError(RouteFilterPayload $Payload): ResponseInterface {
+    $Exception = $Payload->exception;
+    if(!$Exception) {
+      throw new RouterUncaughtExceptionException($Payload::class." does not have a exception. This is APP error.");
+    }
+
     foreach($this->errorHandlers as $class => $handlers) {
       // Neni shoda třidy vyjímky
       if($class !== $Exception::class AND !is_subclass_of($Exception::class, $class)) {
@@ -151,8 +163,8 @@ class Router implements RouteDefinitionInterface {
       }
 
       foreach($handlers as ["handler" => $handler, "filter" => $filter]) {
-        if(!$filter OR $filter($Exception, $options)) {
-          return $handler($this->request, $Exception);
+        if(!$filter OR $filter($Payload)) {
+          return $handler($Payload->request, $Exception);
         }
       }
     }

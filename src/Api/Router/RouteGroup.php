@@ -32,15 +32,8 @@ class RouteGroup implements RouteDefinitionInterface {
    * @return void
    */
   public function setErrorHandler(string $class, \Closure $Closure): void {
-    $this->router->setErrorHandler($class, $Closure, function(\Throwable $Exception, array $options = []) {
-      /** @var array{route: ?Route, request: ?RequestInterface} $options */
-      $Request = $options['request'] ?? null;
-      if(!$Request) {
-        return false;
-      }
-
-      return str_starts_with($Request->getUri()->getPath(), $this->url);
-    });
+    $this->router->setErrorHandler($class, $Closure, $this->filterRequestHandler(...));
+  }
   }
 
 
@@ -96,6 +89,21 @@ class RouteGroup implements RouteDefinitionInterface {
     }
 
     return $this->url.$url;
+  }
+
+
+  /**
+   * Filtrovací funkce pro zachycení pouze požadavků které splňují URL prefix
+   * 
+   * @return bool
+   */
+  private function filterRequestHandler(RouteFilterPayload $Payload): bool {
+    $Request = $Payload->request;
+    if(!$Request) {
+      return false;
+    }
+
+    return str_starts_with($Request->getUri()->getPath(), $this->url);
   }
 
 }
