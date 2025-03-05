@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-require __DIR__.'/../../vendor/autoload.php';
-require __DIR__.'/../../boot/bootstrap.php';
+require __DIR__."/../vendor/autoload.php";
+require __DIR__."/../boot/bootstrap.php";
 
 use Aws\DynamoDb\DynamoDbClient;
 
@@ -9,7 +9,14 @@ $Container = \App\Factory\ContainerFactory::create();
 
 $Client = $Container->get(DynamoDbClient::class);
 
-foreach(glob("*.table.json") as $file) {
+$definitionDir = __DIR__."/dynamodb/";
+$files = glob($definitionDir.".*.table.json");
+
+if(!is_array($files)) {
+  throw new RuntimeException("Cannot get files from dir '{$definitionDir}'");;
+}
+
+foreach($files as $file) {
   $filename = __DIR__.DIRECTORY_SEPARATOR.$file;
 
   $definition = json_decode(file_get_contents($filename) ?: "null", true);
