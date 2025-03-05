@@ -6,6 +6,9 @@ namespace App\Api\Request;
 use App\Http\Enum\MethodEnum;
 
 
+/**
+ * @implements RequestInterface<array-key, mixed>
+ */
 class Request implements RequestInterface {
 
   private \GuzzleHttp\Psr7\Request $request;
@@ -14,6 +17,11 @@ class Request implements RequestInterface {
    * @var array<array-key, string>
    */
   private array $cookies = [];
+
+  /**
+   * @var array<array-key, mixed>
+   */
+  private array $payload = [];
 
 
   public function __construct(\GuzzleHttp\Psr7\Request $Request) {
@@ -47,6 +55,22 @@ class Request implements RequestInterface {
 
   public function getHeaderLine(string $header): string {
     return $this->request->getHeaderLine($header);
+  }
+
+  public function offsetExists(mixed $offset): bool {
+    return isset($this->payload[$offset]);
+  }
+
+  public function offsetGet(mixed $offset): mixed {
+    return $this->payload[$offset] ?? null;
+  }
+
+  public function offsetSet(mixed $offset, mixed $value): void {
+    $this->payload[$offset] = $value;
+  }
+
+  public function offsetUnset(mixed $offset): void {
+    unset($this->payload[$offset]);
   }
 
 }

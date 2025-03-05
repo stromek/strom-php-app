@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace App\Api\Request;
 
-interface RequestInterface {
+/**
+ * @template TKey of array-key
+ * @template TValue mixed
+ * @extends \ArrayAccess<TKey, TValue>
+ */
+interface RequestInterface extends \ArrayAccess {
 
   public function getMethod(): \App\Http\Enum\MethodEnum;
 
