@@ -29,6 +29,15 @@ return function (Container $Container, RouteDefinitionInterface $Route): void {
     );
   });
 
+
+
+  /**
+   * Autentifikace zkaznika
+   */
+  $AuthenticationCustomerMiddleware = $Container->get(\App\Middleware\AuthenticationCustomerMiddleware::class);
+  $Route->addMiddleware($AuthenticationCustomerMiddleware);
+
+
   /**
    * Zákazník
    */
