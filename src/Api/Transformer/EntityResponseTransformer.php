@@ -30,9 +30,13 @@ class EntityResponseTransformer implements ResponseTransformerInterface {
       $isHidden = $visibilityList->find(fn(Visibility $value) => $value->isHidden($version));
       $isVisible = $visibilityList->find(fn(Visibility $value) => $value->isVisible($version));
 
-      if($isHidden) {
-        continue;
+      if($isHidden AND $isVisible) {
+        throw new ResponseTransformerException("Property visibility '".$Entity::class."::".$Property->getName()."' cannot be set to 'visible' and 'hidden' at the same time .");
       }
+
+      if($isHidden) { {
+        continue;
+      }}
 
       if($isVisible OR $visibilityList->count() === 0) {
         $response['attributes'][$Property->getName()] = $Property->getValueSafe();
