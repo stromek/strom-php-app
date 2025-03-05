@@ -2,8 +2,16 @@
   "name": "stromek/strom-php-app",
   "private": true,
   "scripts": {
-    "start": "webpack serve --open",
-    "build": "webpack --mode production --devtool false"
+    "build": "webpack --mode production --devtool false",
+    
+    "start:client": "webpack serve --config-name client --open",
+    "start:snippet": "webpack serve --config-name snippet --open",
+
+    "build:client": "webpack --mode production --config-name client --devtool false",
+    "build:snippet": "webpack --mode production --config-name snippet --devtool false"
+  },
+  "scarfSettings": {
+    "enabled": false
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
@@ -11,14 +19,17 @@
     "@babel/preset-react": "^7.26.3",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
+    "html-loader": "^5.1.0",
     "html-webpack-plugin": "^5.6.3",
     "sass": "^1.85.1",
     "sass-loader": "^16.0.5",
     "serverless-lift": "^1.30.3",
     "style-loader": "^4.0.0",
+    "svg-inline-loader": "^0.8.2",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0"
+    "webpack-dev-server": "^5.2.0",
+    "yaml-loader": "^0.8.1"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.0",
