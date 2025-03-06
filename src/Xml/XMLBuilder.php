@@ -96,6 +96,10 @@ class XMLBuilder extends \DOMDocument {
     $output = $XSLT->transformToXml($this);
     if(libxml_get_errors()) {
       $libXMLError = libxml_get_last_error() ?: null;
+
+      // @TODO
+      vd(libxml_get_errors());
+
       throw new \RuntimeException("XSL transformation failed. Error ". $libXMLError?->message);
     }
 

@@ -1,8 +1,5 @@
-import React, {Fragment, useState} from 'react'
+import React from 'react'
 import {BrowserRouter, Routes, Route, Link, Outlet, useParams, useNavigate} from "react-router";
-
-// Constanty
-// import {} from "./../../slice/app/app.constants.js";
 
 // Stranky
 import PageThread from './../thread/thread.container.js'
@@ -15,8 +12,12 @@ const Thread = (props) => {
   return <div>Thread</div>
 }
 
-const About = (props) => {
-  return <div>About</div>
+const About = (a, b, c) => {
+  return (
+    <div>
+      About
+    </div>
+  )
 }
 
 
@@ -52,11 +53,6 @@ function AppLink({ to, children, ...props }) {
 }
 
 export default (props) => {
-  // const navigation = useNavigation();
-  //
-  // console.log(navigation)
-  // const [count, setCount] = useState(1)
-
   return (
     <BrowserRouter basename="/app/">
       <Routes>

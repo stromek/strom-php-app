@@ -21,10 +21,20 @@
 
     <!-- Tento JS musí být vygenrován JS -->
     <!-- SRC je zakomentováno, protože DEV server to vloží automaticky -->
-    <script async="" data-type="stromcom" data-dl="comLayer" data-ck="aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR" _src="http://localhost:8080/snippet.js"></script>
+    <script
+        async=""
+        data-type="stromcom"
+        data-dl="comLayer"
+        data-ck="aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR"
+        data-cs="yGBQdqj8zgsnid1kqZujUuw0hgjCXNW8GUhyL1DVC6w91wm5dD"
+        _src="http://localhost:8080/snippet.js">
+
+    </script>
 
     <pre>
       const clientKey = "aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR";
+      const clientSecret = "yGBQdqj8zgsnid1kqZujUuw0hgjCXNW8GUhyL1DVC6w91wm5dD"
+
       const scriptSrc = "http://localhost:8080/client.js"
       var comLayer = {
         user : {
@@ -36,7 +46,7 @@
         document.getElementById('config').innerText = JSON.stringify(opt, null, 2)
       }
 
-      (function(win, d, e, layerKey, key) {
+      (function(win, d, e, layerKey, key, secret) {
         win[layerKey] = win[layerKey] || [];
 
         var f= d.getElementsByTagName(e)[0];
@@ -45,16 +55,18 @@
         j.dataset.type = 'stromcom';
         j.dataset.dl = layerKey;
         j.dataset.ck = key;
+        j.dataset.cs = secret;
         j.src = scriptSrc;
         f.parentNode.insertBefore(j,f);
 
-      })(window, document, "script", "comLayer", clientKey);
+      })(window, document, "script", "comLayer", clientKey, clientSecret);
 
 
       window.addEventListener('load', function() {
         renderConfig({
           comLayer: comLayer,
           clientKey: clientKey,
+          clientSecret: clientSecret,
           scriptSrc : scriptSrc,
         });
       });

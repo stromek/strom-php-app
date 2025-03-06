@@ -3,7 +3,7 @@ import ThreadComponent from './thread.component.jsx'
 // import {alert} from "../../slice/app/app.actions";
 
 function mapStateToProps(state, props) {
-  console.log({state, props});
+
   return {
     messages : [],
   }

@@ -1,18 +1,21 @@
-import {APP_STATE} from "./app.constants";
+import {APP_AUTH} from "./app.actions.js";
 
 const getInitialState = function() {
   return {
-    state : APP_STATE.INITIALIZING
+    auth : {
+      // Unused
+      key : '',
+      secret: ''
+    }
   }
 };
 
 export default function(state = getInitialState(), {type, payload}) {
-  switch(type) {
-    case APP_STATE.LOADING:
-      return {...state, state : APP_STATE.LOADING};
 
-    case APP_STATE.DONE:
-      return {...state, state : APP_STATE.DONE};
+  switch(type) {
+    case APP_AUTH:
+      console.info("[auth] setting clientSecret");
+      return {...state, auth: {...state.auth, secret: payload.secret}};
   }
 
   return state;

@@ -6,8 +6,6 @@ export default (props) => {
   const [count, setCount] = useState(1)
   const {thread} = useParams()
 
-  console.log(thread)
-
   return (
     <div>
 

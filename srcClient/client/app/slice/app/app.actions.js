@@ -1,13 +1,15 @@
-export const APP_ALERT = "APP/ALERT";
+
+/**
+ * Zadání autorizačních přístupů
+ */
+export const APP_AUTH = "APP/AUTH";
 
 
-export function alert(alertMsg = null) {
+export function appAuthorize(clientSecret) {
   return async(dispatch) => {
-
     dispatch({
-      type : APP_ALERT,
-      payload : alertMsg
+      type : APP_AUTH,
+      payload : {clientSecret}
     })
   }
 }
-

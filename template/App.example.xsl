@@ -8,13 +8,16 @@
 
   <xsl:template name="htmlBody">
     <xsl:variable name="clientKey" select="clientKey" />
+    <xsl:variable name="clientSecret" select="clientSecret" />
     <xsl:variable name="snippetUrl" select="snippetUrl" />
 
     <h1>Example of page for injecting comments </h1>
 
     <script>
       const clientKey = "<xsl:value-of select="$clientKey" />";
+      const clientSecret = "<xsl:value-of select="$clientSecret" />";
       const snippetSrc = "<xsl:value-of select="$snippetUrl" />"
+
       var comLayer = {
         user : {
           code: "APP-CODE-1", name: 'Novák Jan', emailAddress: 'jan.novak@example.com'
@@ -26,7 +29,7 @@
       }
 
 
-      (function(win, d, e, layerKey, key) {
+      (function(win, d, e, layerKey, key, secret) {
         win[layerKey] = win[layerKey] || [];
 
         var f= d.getElementsByTagName(e)[0];
@@ -35,10 +38,11 @@
         j.dataset.type = 'stromcom';
         j.dataset.dl = layerKey;
         j.dataset.ck = key;
+        j.dataset.cs = secret;
         j.src = snippetSrc;
         f.parentNode.insertBefore(j,f);
 
-      })(window, document, "script", "comLayer", clientKey);
+      })(window, document, "script", "comLayer", clientKey, clientSecret);
 
 
       window.addEventListener('load', function() {

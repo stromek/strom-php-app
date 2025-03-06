@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Snippet</title><script defer="defer" src="/snippet.js"></script></head><body><h1>Example of page for injecting comments</h1><script>var comLayer={user:{code:"APP-CODE-1",name:"Novák Jan",emailAddress:"jan.novak@example.com"}}</script><div data-sc-code="ORDER-1" data-sc-name="Objednávka 123" style="width:100%;height:350px">Zde bude iframe</div><pre id="config"></pre><script async="" data-type="stromcom" data-dl="comLayer" data-ck="aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR" data-cs="yGBQdqj8zgsnid1kqZujUuw0hgjCXNW8GUhyL1DVC6w91wm5dD" _src="http://localhost:8080/snippet.js"></script><pre>
+      const clientKey = "aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR";
+      const clientSecret = "yGBQdqj8zgsnid1kqZujUuw0hgjCXNW8GUhyL1DVC6w91wm5dD"
+
+      const scriptSrc = "http://localhost:8080/client.js"
+      var comLayer = {
+        user : {
+          code: "APP-CODE-1", name: 'Novák Jan', emailAddress: 'jan.novak@example.com'
+        }
+      };
+
+      function renderConfig(opt) {
+        document.getElementById('config').innerText = JSON.stringify(opt, null, 2)
+      }
+
+      (function(win, d, e, layerKey, key, secret) {
+        win[layerKey] = win[layerKey] || [];
+
+        var f= d.getElementsByTagName(e)[0];
+        var j= d.createElement(e)
+        j.async = true;
+        j.dataset.type = 'stromcom';
+        j.dataset.dl = layerKey;
+        j.dataset.ck = key;
+        j.dataset.cs = secret;
+        j.src = scriptSrc;
+        f.parentNode.insertBefore(j,f);
+
+      })(window, document, "script", "comLayer", clientKey, clientSecret);
+
+
+      window.addEventListener('load', function() {
+        renderConfig({
+          comLayer: comLayer,
+          clientKey: clientKey,
+          scriptSrc : scriptSrc,
+        });
+      });
+    </pre></body></html>

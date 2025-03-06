@@ -26,7 +26,10 @@ class AppController extends \App\Controller\HTMLController {
     $this->setTitle("Example");
 
     $this->xml->addData("clientKey", "aVYWB3h7xdhAYWB3jf9OrByM3PLdBfeguuNonxobBkD3dJS3qR");
+    $this->xml->addData("clientSecret", "yGBQdqj8zgsnid1kqZujUuw0hgjCXNW8GUhyL1DVC6w91wm5dD");
+
     $this->xml->addData("snippetUrl", "http://localhost:8080/snippet.js");
+//    $this->xml->addData("snippetUrl", "/public/app/snippet/snippet.js");
 
     return $this->renderHTML("App.example.xsl");
   }

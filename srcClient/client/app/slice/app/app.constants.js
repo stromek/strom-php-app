@@ -1,5 +1,3 @@
-export const APP_STATE = {
-  INITIALIZING : 'initializing',
-  LOADING : 'loading',
-  DONE : 'done'
-};
+export const APP_POST_MESSAGE_ACCEPT = {
+  SOURCE : 'stromcom',
+}
