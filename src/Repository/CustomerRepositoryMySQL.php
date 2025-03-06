@@ -36,12 +36,6 @@ class CustomerRepositoryMySQL extends RepositoryMySQL {
     return $this->findByCondition([["clientKey = %s", $clientKey]]);
   }
 
-
-  public function findByAuthToken(string $authToken): CustomerEntity {
-    return $this->findByCondition([["authToken = %s", $authToken], ["authToken != ''"]]);
-  }
-
-
   public function findByID(int $id): CustomerEntity {
     return $this->findByCondition([["id = %i", $id]]);
   }

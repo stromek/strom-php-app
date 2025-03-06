@@ -15,7 +15,7 @@ class AuthenticationService {
 
   private AuthProviderInterface $provider;
 
-  public function __construct(AuthBearerProvider $provider) {
+  public function __construct(AuthProviderInterface $provider) {
     $this->provider = $provider;
   }
 

@@ -11,7 +11,7 @@
  Target Server Version : 80404 (8.4.4)
  File Encoding         : 65001
 
- Date: 05/03/2025 14:21:43
+ Date: 06/03/2025 14:35:03
 */
 
 SET NAMES utf8mb4;
@@ -24,18 +24,29 @@ DROP TABLE IF EXISTS `customer`;
 CREATE TABLE `customer`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `clientKey` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `authToken` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `isActive` tinyint UNSIGNED NOT NULL DEFAULT 1,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `clientKey`(`clientKey` ASC) USING BTREE,
-  UNIQUE INDEX `authToken`(`authToken` ASC) USING BTREE,
   CONSTRAINT `customer_clientKey` CHECK (length(`clientKey`) = 50),
   CONSTRAINT `customer_name` CHECK (length(`name`) > 0),
-  CONSTRAINT `customer_authToken` CHECK (length(`authToken`) = 50),
   CONSTRAINT `customer_isActive` CHECK (`isActive` in (0,1))
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Table structure for customerAuth
+-- ----------------------------
+DROP TABLE IF EXISTS `customerAuth`;
+CREATE TABLE `customerAuth`  (
+  `customer_id` int UNSIGNED NOT NULL,
+  `authType` enum('httpBearer','httpReferer','remoteAddress') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `authValue` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  PRIMARY KEY (`customer_id`, `authType`, `authValue`) USING BTREE,
+  UNIQUE INDEX `authType`(`authType` ASC, `authValue` ASC) USING BTREE,
+  CONSTRAINT `customerAuth_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `customerAuth_httpBearer` CHECK (((`authType` = _utf8mb4'httpBearer') and (length(`authValue`) = 50)) or (`authType` <> _utf8mb4'httpBearer'))
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for message
@@ -53,6 +64,7 @@ CREATE TABLE `message`  (
   INDEX `user_id`(`user_id` ASC) USING BTREE,
   INDEX `customer_id`(`customer_id` ASC, `thread_id` ASC) USING BTREE,
   INDEX `message_ibfk_2`(`thread_id` ASC, `customer_id` ASC) USING BTREE,
+  UNIQUE INDEX `thread_id`(`thread_id` ASC, `hash` ASC) USING BTREE,
   CONSTRAINT `message_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `message_ibfk_2` FOREIGN KEY (`thread_id`, `customer_id`) REFERENCES `thread` (`id`, `customer_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `message_hash` CHECK (length(`hash`) = 10)
@@ -68,14 +80,14 @@ CREATE TABLE `thread`  (
   `code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `hash` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `hash` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `hash`(`hash` ASC) USING BTREE,
+  UNIQUE INDEX `hash`(`customer_id` ASC, `hash` ASC) USING BTREE,
   UNIQUE INDEX `customer_id`(`customer_id` ASC, `code` ASC) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC, `customer_id` ASC) USING BTREE,
   CONSTRAINT `thread_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `thread_hash` CHECK (length(`hash`) = 100)
+  CONSTRAINT `thread_hash` CHECK (length(`hash`) = 10)
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -129,7 +141,6 @@ DROP TRIGGER IF EXISTS `customer_bi`;
 delimiter ;;
 CREATE TRIGGER `customer_bi` BEFORE INSERT ON `customer` FOR EACH ROW BEGIN
   SET new.clientKey = (SELECT RANDOM_STRING(50));
-  SET new.authToken = (SELECT RANDOM_STRING(50));
 END
 ;;
 delimiter ;
@@ -143,9 +154,20 @@ CREATE TRIGGER `customer_bu` BEFORE UPDATE ON `customer` FOR EACH ROW BEGIN
   IF(new.clientKey = '') THEN
     SET new.clientKey = (SELECT RANDOM_STRING(50));
   END IF;
-  IF(new.authToken = '') THEN
-    SET new.authToken= (SELECT RANDOM_STRING(50));
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Triggers structure for table customerAuth
+-- ----------------------------
+DROP TRIGGER IF EXISTS `customerAuth_bi`;
+delimiter ;;
+CREATE TRIGGER `customerAuth_bi` BEFORE INSERT ON `customerAuth` FOR EACH ROW BEGIN
+  IF(new.authType = 'httpBearer' AND new.authValue = '') THEN
+    SET new.authValue = (SELECT RANDOM_STRING(50));
   END IF;
+
 END
 ;;
 delimiter ;
@@ -167,7 +189,20 @@ delimiter ;
 DROP TRIGGER IF EXISTS `thread_bi`;
 delimiter ;;
 CREATE TRIGGER `thread_bi` BEFORE INSERT ON `thread` FOR EACH ROW BEGIN
-  SET new.hash = (SELECT RANDOM_STRING(100));
+  SET new.hash = (SELECT RANDOM_STRING(10));
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Triggers structure for table thread
+-- ----------------------------
+DROP TRIGGER IF EXISTS `thread_bu`;
+delimiter ;;
+CREATE TRIGGER `thread_bu` BEFORE UPDATE ON `thread` FOR EACH ROW BEGIN
+  IF(new.hash = '') THEN
+    SET new.hash = (SELECT RANDOM_STRING(10));
+  END IF;
 END
 ;;
 delimiter ;

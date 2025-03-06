@@ -6,13 +6,18 @@ namespace App\Authentication\Provider;
 use App\Api\Request\RequestInterface;
 use App\Entity\CustomerEntity;
 use App\Entity\UserEntity;
+use App\Repository\CustomerAuthRepositoryMySQL;
+use App\Repository\CustomerRepositoryMySQL;
 use DI\Attribute\Inject;
 
 
 class AuthBearerProvider implements AuthProviderInterface {
 
   #[Inject]
-  private readonly \App\Repository\CustomerRepositoryMySQL $customerRepository;
+  private readonly CustomerRepositoryMySQL $customerRepository;
+
+  #[Inject]
+  private readonly CustomerAuthRepositoryMySQL $customerAuthRepository;
 
   /**
    * @var RequestInterface<array-key, mixed>
@@ -35,7 +40,10 @@ class AuthBearerProvider implements AuthProviderInterface {
     }
 
     try {
-      return $this->customerRepository->findByAuthToken($bearer);
+      $CustomerAuth = $this->customerAuthRepository->findAuth(\App\Entity\Enum\CustomerAuthTypeEnum::HTTP_BEARER, $bearer);
+      
+      return $this->customerRepository->findByID($CustomerAuth->customer_id);
+
     } catch(\App\Repository\RepositoryException $e) {
       if($e->getCode() === \App\Repository\RepositoryException::NOT_FOUND) {
         return null;
@@ -54,9 +62,7 @@ class AuthBearerProvider implements AuthProviderInterface {
       return substr($authorization, strlen($bearerPrefix));
     }
 
-    // query param fallback
-    $bearer = $this->request->getQuery("bearer");
-    return is_string($bearer) ? $bearer : null;
+    return null;
   }
 
 

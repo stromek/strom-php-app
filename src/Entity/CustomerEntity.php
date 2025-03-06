@@ -16,7 +16,6 @@ use App\Entity\Attribute\Value\DefaultValue;
  * @extends Entity<CustomerEntity>
  * @property int $id
  * @property string $clientKey
- * @property string $authToken
  * @property string $name
  * @property bool $isActive
  * @property \DateTime $createdAt
@@ -36,11 +35,6 @@ class CustomerEntity extends Entity {
   #[Visibility(Visibility::HIDDEN)]
   #[Virtual]
   private string $clientKey;
-
-  #[Length(50, 50)]
-  #[Visibility(Visibility::HIDDEN)]
-  #[Virtual]
-  private string $authToken;
 
 //  #[NotEmpty]
   #[Length(min: 1, max: 100)]
