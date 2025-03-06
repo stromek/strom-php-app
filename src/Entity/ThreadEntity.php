@@ -23,8 +23,14 @@ use App\Entity\Attribute\Value\DefaultValue;
  * @property \DateTime $createdAt
  */
 #[OA\Schema(
-  schema: "ThreadEntity",
+  schema: "Entity:Thread",
   type: "object"
+)]
+#[OA\Schema(
+  schema: "Entity:Thread:Hash",
+  type: "string",
+  pattern: "^[a-zA-Z0-9]{10}\$",
+  example: "eVO6SY5kf5"
 )]
 class ThreadEntity extends Entity {
 
@@ -50,9 +56,9 @@ class ThreadEntity extends Entity {
   #[OA\Property(description: "URL k objektu ke kterému se thread vztahuje (např. odkaz na detail objednávky)", example: "http://www.example.com/order/1234/")]
   private ?string $url;
 
-  #[Length(100, 100)]
+  #[Length(10, 10)]
   #[Virtual]
-  #[OA\Property(description: "Unikátní hash threadu", example: "26cA9OuRGD1ZLER8WaRDpZxz3sV...")]
+  #[OA\Property(ref: "#/components/schemas/Entity:Thread:Hash", description: "Unikátní hash threadu", example: "eVO6SY5kf5")]
   private ?string $hash;
 
   #[DefaultValue(DefaultValue::NOW)]

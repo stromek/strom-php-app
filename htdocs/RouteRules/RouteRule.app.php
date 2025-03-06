@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Tracy\Debugger;
 use DI\Container;
-use App\Env\AppEnv;
 use App\Api\Request\Request;
 use App\Api\Response\ResponseFactory;
 use App\Api\Response\ResponseInterface;

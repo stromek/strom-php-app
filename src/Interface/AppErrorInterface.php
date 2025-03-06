@@ -7,7 +7,7 @@ namespace App\Interface;
 use App\Http\Enum\StatusCodeEnum;
 
 
-interface AppErrorInterface {
+interface AppErrorInterface extends \Throwable {
 
   public function getStatusCodeEnum(): StatusCodeEnum;
 }

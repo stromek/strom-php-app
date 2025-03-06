@@ -22,7 +22,7 @@ use App\Entity\Attribute\Value\DefaultValue;
  * @property \DateTime $createdAt
  */
 #[OA\Schema(
-  schema: "CustomerEntity",
+  schema: "Entity:Customer",
   type: "object"
 )]
 class CustomerEntity extends Entity {
@@ -44,10 +44,10 @@ class CustomerEntity extends Entity {
 
 //  #[NotEmpty]
   #[Length(min: 1, max: 100)]
-  #[OA\Property(example: "Firma s.r.o.")]
+  #[OA\Property(title: 'Customer name', example: "Company ltd.")]
   private string $name;
 
-  #[OA\Property(description: "true = Aktivní účet, false = neaktivní účet")]
+  #[OA\Property(description: "true = active account, false = disabled account")]
   private bool $isActive = true;
 
   #[DefaultValue(DefaultValue::NOW)]

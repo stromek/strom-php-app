@@ -23,12 +23,18 @@ use App\Entity\Attribute\Value\DefaultValue;
  * @property \DateTime $createdAt
  */
 #[OA\Schema(
-  schema: "MessageEntity",
+  schema: "Entity:Message",
   properties: [
     new OA\Property(type: "string", property: "thread_hash"),
-    new OA\Property(type: "string", property: "user_hash"),
+    new OA\Property(type: "string", property: "user_hash")
   ],
   type: "object"
+)]
+#[OA\Schema(
+  schema: "Entity:Message:Hash",
+  type: "string",
+  pattern: "^[a-zA-Z0-9]{10}\$",
+  example: "eVO6SY5kf5"
 )]
 class MessageEntity extends Entity {
 
@@ -51,11 +57,11 @@ class MessageEntity extends Entity {
 
   #[Length(10, 10)]
   #[Virtual]
-  #[OA\Property(description: "Unikátní hash zprávy v rámci threadu", example: "yhzTz2ie5z")]
+  #[OA\Property(ref: "#/components/schemas/Entity:Message:Hash", description: "Unikátní hash zprávy v rámci threadu", example: "yhzTz2ie5z")]
   private string $hash;
 
   #[NotEmpty]
-  #[OA\Property(description: "Obsah zpravy ve formátu HTML", example: "Toto je zpráva")]
+  #[OA\Property(description: "Obsah zpravy ve formátu HTML", example: "<p>Toto je zpráva</p>")]
   private string $message;
 
   #[DefaultValue(DefaultValue::NOW)]

@@ -15,10 +15,11 @@ class AuthenticationCustomerMiddleware implements MiddlewareInterface {
 
   private AuthenticationService $authenticationService;
 
+
   public function __construct(AuthenticationService $AuthenticationService) {
     $this->authenticationService = $AuthenticationService;
-
   }
+
 
   /**
    * @param RequestInterface<array-key, mixed> $Request

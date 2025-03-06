@@ -21,14 +21,14 @@ class ApiController extends \App\Controller\Controller {
     return $this->request['customer'];
   }
 
+
   protected function getCurrentCustomerID(): int {
     return $this->getCurrentCustomer()['id'];
   }
 
 
   public function error404(): ResponseInterface {
-    $Exception = new AppException("Error 404 - Page not found", );
+    $Exception = new AppException("Error 404 - Page not found");
     return $this->responseFactory->createApiResponseFromException($Exception, \App\Http\Enum\StatusCodeEnum::STATUS_NOT_FOUND);
   }
-
 }

@@ -6,15 +6,11 @@ namespace App\Controller;
 use App\Http\Enum\StatusCodeEnum;
 
 
-class ControllerException extends \Exception implements \App\Interface\AppErrorInterface {
-
+class ControllerException extends \App\Exception\AppException {
 
 
   public function getStatusCodeEnum(): StatusCodeEnum {
     return StatusCodeEnum::STATUS_INTERNAL_SERVER_ERROR;
-//    return match ($this->code) {
-//      default => StatusCodeEnum::STATUS_INTERNAL_SERVER_ERROR,
-//    };
   }
 
 }

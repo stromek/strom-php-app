@@ -11,7 +11,7 @@ interface RouteDefinitionInterface {
   /**
    * Odchyceni chybi
    *
-   * @param class-string<\Exception> $class
+   * @param class-string<\Throwable> $class
    * @return void
    */
   public function setErrorHandler(string $class, \Closure $Closure): void;

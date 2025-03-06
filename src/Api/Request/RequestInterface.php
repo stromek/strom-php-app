@@ -21,6 +21,7 @@ interface RequestInterface extends \ArrayAccess {
    */
   public function getQuery(string $key): null|string|array;
 
+
   public function getCookie(string $name): ?string;
 
   

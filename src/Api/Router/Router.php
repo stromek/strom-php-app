@@ -24,7 +24,7 @@ class Router implements RouteDefinitionInterface {
   private array $routes = [];
 
   /**
-   * @var array<class-string<\Exception>, array<int, array{handler: \Closure, filter: ?\Closure}>>
+   * @var array<class-string<\Throwable>, array<int, array{handler: \Closure, filter: ?\Closure}>>
    */
   private array $errorHandlers = [];
 
@@ -33,11 +33,16 @@ class Router implements RouteDefinitionInterface {
    */
   private array $middlewares = [];
 
+  /**
+   * @var RequestInterface<array-key, mixed>
+   */
   private RequestInterface $request;
 
   private RouteHandlerFactory $routeHandlerFactory;
 
-
+  /**
+   * @param RequestInterface<array-key, mixed> $Request
+   */
   public function __construct(RequestInterface $Request, RouteHandlerFactory $RouteHandlerFactory) {
     $this->request = $Request;
     $this->routeHandlerFactory = $RouteHandlerFactory;
@@ -97,7 +102,7 @@ class Router implements RouteDefinitionInterface {
 
 
   /**
-   * @param class-string<\Exception> $class
+   * @param class-string<\Throwable> $class
    */
   public function setErrorHandler(string $class, \Closure $Closure, ?\Closure $Filter = null): void {
     $this->errorHandlers[$class] ??= [];
@@ -141,6 +146,9 @@ class Router implements RouteDefinitionInterface {
   }
 
 
+  /**
+   * @param RequestInterface<array-key, mixed>|null $Request
+   */
   public function findRouteByRequest(?RequestInterface $Request = null): ?Route {
     $Request ??= $this->request;
 

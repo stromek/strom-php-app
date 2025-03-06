@@ -47,13 +47,10 @@ class CustomerController extends \App\Controller\Api\ApiController {
       new OA\Response(
         response: 200,
         description: 'Success',
-        content: new OA\JsonContent(allOf: [
-          new OA\Schema(ref: "#/components/schemas/ResponseEntity"),
-          new OA\Schema(properties: [
-            new OA\Property(property: "payload", properties: [
-              new OA\Property(property : "attributes", ref: "#/components/schemas/CustomerEntity")
-            ])
-          ])
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", ref: "#/components/schemas/Entity:Customer"),
+          new OA\Property(property: "meta", ref: "#/components/schemas/Response:Meta"),
         ]),
       ),
     ]
@@ -76,7 +73,11 @@ class CustomerController extends \App\Controller\Api\ApiController {
       new OA\Response(
         response: 200,
         description: 'Success',
-        content: new OA\JsonContent(ref: "#/components/schemas/UserEntityList"),
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Entity:User")),
+          new OA\Property(property: "meta", ref: "#/components/schemas/Response:Meta"),
+        ]),
       )
     ]
   )]
@@ -89,7 +90,6 @@ class CustomerController extends \App\Controller\Api\ApiController {
   }
 
 
-
   #[OA\Get(
     path: '/api/customer/user/{hash}/',
     description: 'Detail of customer user',
@@ -100,15 +100,12 @@ class CustomerController extends \App\Controller\Api\ApiController {
       new OA\Response(
         response: 200,
         description: 'Success',
-        content: new OA\JsonContent(allOf: [
-          new OA\Schema(ref: "#/components/schemas/ResponseEntity"),
-          new OA\Schema(properties: [
-            new OA\Property(property: "payload", properties: [
-              new OA\Property(property : "attributes", ref: "#/components/schemas/UserEntity")
-            ])
-          ])
-        ]),
-      ),
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", ref: "#/components/schemas/Entity:User"),
+          new OA\Property(property: "meta", ref: "#/components/schemas/Response:Meta")
+        ])
+      )
     ]
   )]
   #[OA\Parameter(
@@ -116,7 +113,7 @@ class CustomerController extends \App\Controller\Api\ApiController {
     description: 'UserEntity hash',
     in: 'path',
     required: true,
-    schema: new OA\Schema(ref: "#/components/schemas/UserEntityHash")
+    schema: new OA\Schema(ref: "#/components/schemas/Entity:User:Hash")
   )]
   public function userDetail(string $hash): ResponseInterface {
     $User = $this->userRepo->findByCustomerIDAndHash($this->getCurrentCustomerID(), $hash);

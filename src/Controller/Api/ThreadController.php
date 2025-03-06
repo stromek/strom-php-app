@@ -44,15 +44,12 @@ class ThreadController extends ApiController {
       new OA\Response(
         response: 200,
         description: 'Success',
-        content: new OA\JsonContent(allOf: [
-          new OA\Schema(ref: "#/components/schemas/ResponseEntity"),
-          new OA\Schema(properties: [
-            new OA\Property(property: "payload", properties: [
-              new OA\Property(property : "attributes", ref: "#/components/schemas/ThreadEntity")
-            ])
-          ])
-        ]),
-      ),
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", ref: "#/components/schemas/Entity:Thread"),
+          new OA\Property(property: "meta", ref: "#/components/schemas/Response:Meta")
+        ])
+      )
     ]
   )]
   #[OA\Parameter(
@@ -60,7 +57,7 @@ class ThreadController extends ApiController {
     description: 'ThreadEntity hash',
     in: 'path',
     required: true,
-    schema: new OA\Schema(ref: "#/components/schemas/ThreadEntityHash")
+    schema: new OA\Schema(ref: "#/components/schemas/Entity:Thread:Hash")
   )]
   public function detailByHash(string $hash): ResponseInterface {
     $Thread = $this->threadRepo->findByCustomerIDAndHash($this->getCurrentCustomerID(), $hash);
@@ -69,7 +66,38 @@ class ThreadController extends ApiController {
   }
 
 
-  
+  #[OA\Get(
+    path: '/api/thread/{hash}/messages/',
+    description: 'List of messages in thread',
+    tags: ['Thread', 'Message'],
+    responses: [
+      new OA\Response(ref: "#/components/responses/401", response: 401),
+      new OA\Response(ref: "#/components/responses/500", response: 500),
+      new OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Entity:Message")),
+          new OA\Property(property: "meta", allOf: [
+            new OA\Schema(allOf: [
+              new OA\Property(ref: "#/components/schemas/Response:Meta"),
+              new OA\Schema(properties: [
+                new OA\Property(property: "paginator", ref: "#/components/schemas/Response:Meta:Paginator")
+              ])
+            ])
+          ])
+        ]),
+      )
+    ]
+  )]
+  #[OA\Parameter(
+    name: 'hash',
+    description: 'ThreadEntity hash',
+    in: 'path',
+    required: true,
+    schema: new OA\Schema(ref: "#/components/schemas/Entity:Thread:Hash")
+  )]
   public function listOfMessages(string $hash): ResponseInterface {
     $customer_id = $this->getCurrentCustomerID();
     $thread_id = $this->threadRepo->getIDByCustomerIDAndHash($customer_id, $hash);

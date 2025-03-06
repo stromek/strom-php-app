@@ -14,7 +14,6 @@ class AuthBearerProvider implements AuthProviderInterface {
   #[Inject]
   private readonly \App\Repository\CustomerRepositoryMySQL $customerRepository;
 
-  
   /**
    * @var RequestInterface<array-key, mixed>
    */
@@ -38,7 +37,11 @@ class AuthBearerProvider implements AuthProviderInterface {
     try {
       return $this->customerRepository->findByAuthToken($bearer);
     } catch(\App\Repository\RepositoryException $e) {
-      return null;
+      if($e->getCode() === \App\Repository\RepositoryException::NOT_FOUND) {
+        return null;
+      }
+
+      throw $e;
     }
   }
 

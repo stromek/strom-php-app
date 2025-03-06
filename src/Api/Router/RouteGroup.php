@@ -29,7 +29,7 @@ class RouteGroup implements RouteDefinitionInterface {
   /**
    * Odchyceni chybi v rámci RouteGroup
    *
-   * @param class-string<\Exception> $class
+   * @param class-string<\Throwable> $class
    * @return void
    */
   public function setErrorHandler(string $class, \Closure $Closure): void {

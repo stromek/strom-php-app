@@ -10,26 +10,25 @@ use App\Controller\Api\ApiController;
 use App\Controller\Api\CustomerController;
 use App\Controller\Api\ThreadController;
 use App\Exception\AppException;
+use App\Interface\AppErrorInterface;
+use App\Util\RouterUtil;
 use DI\Container;
-use Tracy\Debugger;
 
 
 return function (Container $Container, RouteDefinitionInterface $Route): void {
-  $Route->setErrorHandler(\Exception::class, function(Request $Request, \Exception $Exception) use ($Container): ResponseInterface {
-    $payload = null;
-
-    if(\App\Env\AppEnv::displayInternalError()) {
-      $payload = ["_exception" => \App\Util\ExceptionDump::toArray($Exception)];
-    }else {
-      Debugger::tryLog($Exception, Debugger::EXCEPTION);
-    }
-
+  $Route->setErrorHandler(AppErrorInterface::class, function(Request $Request, AppErrorInterface $Exception) use ($Container): ResponseInterface {
     return $Container->get(ResponseFactory::class)->createApiResponseFromException(
-      new AppException("Internal error.", 0, $Exception), null, $payload
+      $Exception, $Exception->getStatusCodeEnum(), RouterUtil::getErrorHandlerExceptionDetails($Exception)
     );
   });
 
 
+  $Route->setErrorHandler(\Exception::class, function(Request $Request, \Exception $Exception) use ($Container): ResponseInterface {
+    return $Container->get(ResponseFactory::class)->createApiResponseFromException(
+      new AppException("Internal error.", 0, $Exception), null, RouterUtil::getErrorHandlerExceptionDetails($Exception)
+    );
+  });
+  
 
   /**
    * Autentifikace zkaznika
