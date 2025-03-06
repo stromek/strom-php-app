@@ -60,6 +60,22 @@ class Property {
     return $this->reflection->getType();
   }
 
+  public function getNamedType(): ?\ReflectionNamedType {
+    $Type = $this->getType();
+
+    return ($Type instanceof \ReflectionNamedType) ? $Type : null;
+  }
+
+  private function isTypeEnum(): bool {
+    $Type = $this->getNamedType();
+
+    if(!$Type OR $Type->isBuiltin()) {
+      return false;
+    }
+
+    return enum_exists($Type->getName());
+  }
+
 
   /**
    * @throws PropertyException
@@ -74,6 +90,7 @@ class Property {
 
     $value = $this->mutateValue($value);
     $this->validateValue($value);
+
     $this->reflection->setValue($this->entity, $value);
   }
 
@@ -242,7 +259,8 @@ class Property {
    * @throws PropertyException
    */
   private function mutateValue(mixed $value): mixed {
-    $currentValue = $value;
+    // Převod do ENUM
+    $currentValue = ($this->isTypeEnum() AND $this->getNamedType()) ? $this->getNamedType()->getName()::from($value) : $value;
 
     foreach($this->getAttributes(MutatorInterface::class) as $Mutator) {
       $currentValue = $Mutator->mutate($currentValue, $this->entity);
