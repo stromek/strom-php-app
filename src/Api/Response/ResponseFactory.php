@@ -73,6 +73,7 @@ class ResponseFactory {
       $statusCodeEnum,
       $Filter->transform($Body->create()),
       $Filter->contentType(),
+      $Filter->transformHeaders()
     );
   }
 
@@ -110,6 +111,7 @@ class ResponseFactory {
       $statusCodeEnum,
       $Filter->transform($Body->create()),
       $Filter->contentType(),
+      $Filter->transformHeaders()
     );
   }
 

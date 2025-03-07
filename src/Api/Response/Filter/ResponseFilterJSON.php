@@ -16,4 +16,12 @@ class ResponseFilterJSON implements ResponseFilterInterface {
     return json_encode($body, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
   }
 
+  /**
+   * @param array<string, string> $headers
+   * @return array<string, string>
+   */
+  public function transformHeaders(array $headers = []): array {
+    return $headers;
+  }
+
 }

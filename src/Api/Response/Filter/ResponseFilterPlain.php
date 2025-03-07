@@ -15,4 +15,12 @@ class ResponseFilterPlain implements ResponseFilterInterface {
     return strval($body);
   }
 
+  /**
+   * @param array<string, string> $headers
+   * @return array<string, string>
+   */
+  public function transformHeaders(array $headers = []): array {
+    return $headers;
+  }
+
 }

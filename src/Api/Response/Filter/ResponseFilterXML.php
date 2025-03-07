@@ -24,7 +24,15 @@ class ResponseFilterXML implements ResponseFilterInterface {
     }
 
     return $Xml->__toString();
+  }
 
+
+  /**
+   * @param array<string, string> $headers
+   * @return array<string, string>
+   */
+  public function transformHeaders(array $headers = []): array {
+    return $headers;
   }
 
 }

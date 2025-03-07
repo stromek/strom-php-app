@@ -12,4 +12,10 @@ interface ResponseFilterInterface {
   public function contentType(): ?string;
 
   public function transform(mixed $value): string;
+
+  /**
+   * @param array<string, string> $headers
+   * @return array<string, string>
+   */
+  public function transformHeaders(array $headers = []): array;
 }
