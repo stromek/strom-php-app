@@ -3,6 +3,8 @@ import {BrowserRouter, Routes, Route, Link, Outlet, useParams, useNavigate} from
 
 // Stranky
 import PageThread from './../thread/thread.container.js'
+import AppLink from "../../components/AppLink.jsx";
+
 
 const Home = (props) => {
   return <div>Home</div>
@@ -39,18 +41,6 @@ const App404 = (props) => {
   return <div>Error 404</div>
 }
 
-function AppLink({ to, children, ...props }) {
-  const navigate = useNavigate()
-  const { clientKey } = useParams();
-
-  const path = `/${clientKey}${to}`;
-  const handleNavigate = (e) => {
-    navigate(path, {replace: true});
-    e.preventDefault();
-  }
-
-  return (<a href={'/app'+path} onClick={handleNavigate}>{children}</a>);
-}
 
 export default (props) => {
   return (
