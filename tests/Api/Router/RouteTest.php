@@ -3,11 +3,43 @@ declare(strict_types=1);
 namespace Api\Router;
 
 use App\Api\Router\Route;
+use App\Api\Router\RouteHandler;
 use App\Http\Enum\MethodEnum;
+use App\Middleware\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;
 
 
 class RouteTest extends TestCase {
+
+  public function testMiddlewareApplicableNoOne(): void {
+    $Route = $this->createRoute("*");
+    $Route->setMiddlewareFilter(false);
+
+    $this->assertFalse($Route->isMiddlewareApplicable($this->createMiddleWare()));
+    $this->assertFalse($Route->isMiddlewareApplicable($this->createMiddleWare()));
+  }
+
+  public function testMiddlewareApplicableAll(): void {
+    $Route = $this->createRoute("*");
+    $Route->setMiddlewareFilter(true);
+
+    $this->assertTrue($Route->isMiddlewareApplicable($this->createMiddleWare()));
+    $this->assertTrue($Route->isMiddlewareApplicable($this->createMiddleWare()));
+  }
+
+  public function testMiddlewareApplicableFilter(): void {
+    $Route = $this->createRoute("*");
+
+    $allow = [$this->createMiddleWare(), $this->createMiddleWare()];
+    $deny = [$this->createMiddleWare(), $this->createMiddleWare()];
+
+    $Route->setMiddlewareFilter(function($Middleware) use($allow): bool {
+      return !is_null(array_find($allow, fn($M) => $Middleware->id === $M->id));
+    });
+
+    array_map(fn($M) => $this->assertTrue($Route->isMiddlewareApplicable($M)), $allow);
+    array_map(fn($M) => $this->assertFalse($Route->isMiddlewareApplicable($M)), $deny);
+  }
 
 
   public function testMethodMatch(): void {
@@ -58,6 +90,16 @@ class RouteTest extends TestCase {
     $RouteHandler ??= $this->createRouteHandler();
 
     return new Route($Method, $url, $RouteHandler);
+  }
+
+  private function createMiddleWare(): MiddlewareInterface {
+    $id = uniqid();
+
+    return new class($id) implements MiddlewareInterface {
+      public function __construct(public readonly string $id) {}
+
+      public function handle(\App\Api\Request\RequestInterface $Request, callable $next): void {}
+    };
   }
 
   private function createRouteHandler(): \App\Api\Router\RouteHandler {

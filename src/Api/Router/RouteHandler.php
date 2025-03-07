@@ -49,7 +49,6 @@ class RouteHandler extends \App\Util\CallbackHandler {
 
 
 
-
   /**
    * @param \ReflectionNamedType $Type
    * @param mixed $value

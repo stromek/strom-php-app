@@ -9,6 +9,7 @@ use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
 use App\Middleware\MiddlewareInterface;
+use App\Util\RouterUtil;
 
 
 class Route {
@@ -30,10 +31,10 @@ class Route {
 
   /**
    * Filtrování middleware
+   *
    *  true = platí vše
    *  false = neplatí nic
-   *  \Closure = filtrovační metoda
-   *
+   *  \Closure(MiddlewareInterface $Middleware, Route $Route): bool = metoda pro filtrování
    *
    * @param bool|\Closure $filter
    */
@@ -82,33 +83,11 @@ class Route {
    * @return array<string, string>
    */
   private function parseArguments(RequestInterface $Request): array {
-    if (preg_match($this->createRegex(), $Request->getUri()->getPath(), $matches)) {
-      // Pouze pojmenované vysledky
-      return array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-    }
-
-    return [];
+    return RouterUtil::parsePathArgumentsForULRMask($this->url, $Request->getUri()->getPath());
   }
 
   private function createRegex(): string {
-    // Wildcard *
-    $url = preg_replace_callback(
-      '/\*(?=(?:[^{}]*{[^{}]*})*[^{}]*$)/',
-      function ($matches) {
-        return "(?:.*)";
-      },
-      $this->url
-    ) ?: $this->url;
-
-    // Argumenty v {name:regex}
-    $regex = preg_replace_callback('/\{(\w+):([^}]+)\}/', function($matches) {
-      $name = preg_quote($matches[1], "~");
-      $pattern = $matches[2];
-
-      return "(?P<{$name}>{$pattern})";
-    }, $url);
-
-    return "~^{$regex}$~";
+    return RouterUtil::createRegexFromUrlMask($this->url);
   }
 
 }
