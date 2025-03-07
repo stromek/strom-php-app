@@ -17,7 +17,7 @@ use OpenApi\Attributes as OA;
 /**
  * @template E of CustomerEntity
  */
-class CustomerController extends \App\Controller\Api\ApiController {
+class CustomerController extends ApiController {
 
 
   /**

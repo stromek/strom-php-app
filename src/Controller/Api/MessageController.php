@@ -14,7 +14,7 @@ use DI\Attribute\Inject;
 /**
  * @template E of MessageEntity
  */
-class MessageController extends \App\Controller\Controller {
+class MessageController extends ApiController {
 
 
   #[Inject]

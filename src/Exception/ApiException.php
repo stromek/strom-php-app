@@ -18,6 +18,11 @@ class ApiException extends AppException implements ApiErrorInterface {
   public function __construct(string $message = "", int $code = 0, ?\Throwable $previous = null, mixed $details = null) {
     parent::__construct($message, $code, $previous);
 
+    $this->setDetails($details);
+  }
+
+
+  public function setDetails(mixed $details): void {
     $this->details = $details;
   }
 

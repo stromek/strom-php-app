@@ -35,7 +35,7 @@ class RouteHandler extends \App\Util\CallbackHandler {
           // Hodnota parmetru chybi
 
 
-          throw new RouterException("Cannot call route handler. Parameter #{$Parameter->getPosition()} '\$key' is mandatory for ".$this->getReflection()->__toString(). ". Cannot call router callback.");
+          throw new RouterException("Cannot call route handler. Parameter #{$Parameter->getPosition()} '\$$key' is mandatory for ".$this->getReflection()->__toString(). ". Cannot call router callback.");
         }
 
         //array, callable, null, object, string, iterable, mixed, never, void,
