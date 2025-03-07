@@ -66,6 +66,40 @@ class ThreadController extends ApiController {
   }
 
 
+
+  #[OA\Get(
+    path: '/api/thread/find/',
+    description: 'Thread detail by code',
+    tags: ['Thread'],
+    responses: [
+      new OA\Response(ref: "#/components/responses/401", response: 401),
+      new OA\Response(ref: "#/components/responses/500", response: 500),
+      new OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+          new OA\Property(property: "status", type: "string", example: "success"),
+          new OA\Property(property: "data", ref: "#/components/schemas/Entity:Thread"),
+          new OA\Property(property: "meta", ref: "#/components/schemas/Response:Meta")
+        ])
+      )
+    ]
+  )]
+  #[OA\Parameter(
+    name: 'code', description: 'ThreadEntity code', in: 'query', required: true, example: 'ORDER-1'
+  )]
+  public function detailByCode(): ResponseInterface {
+    $code = $this->request->getQuery("code");
+    if(!is_string($code) OR !$code) {
+      throw new \App\Controller\ControllerException("Missing parameter 'code'.");
+    }
+
+    $Thread = $this->threadRepo->findByCustomerIDAndCode($this->getCurrentCustomerID(), $code);
+
+    return $this->responseFactory->createApiResponse($this->entityTransformer->transformEntity($Thread));
+  }
+
+
   #[OA\Get(
     path: '/api/thread/{hash}/messages/',
     description: 'List of messages in thread',

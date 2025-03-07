@@ -70,6 +70,7 @@ return function (Container $Container, RouteDefinitionInterface $Route): void {
    * Thread
    */
   $Route->group("/thread/", function (RouteDefinitionInterface $Route): void {
+    $Route->get("find/", [ThreadController::class, "detailByCode"]);
     $Route->get("{hash:[a-zA-Z0-9]+}/", [ThreadController::class, "detailByHash"]);
     $Route->get("{hash:[a-zA-Z0-9]+}/messages/", [ThreadController::class, "listOfMessages"]);
 

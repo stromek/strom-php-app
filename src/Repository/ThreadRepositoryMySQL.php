@@ -37,6 +37,11 @@ class ThreadRepositoryMySQL extends RepositoryMySQL {
   }
 
 
+  public function findByCustomerIDAndCode(int $customer_id, string $code): ThreadEntity {
+    return $this->findByCondition([["customer_id = %i", $customer_id], ["code = %s", $code]]);
+  }
+
+
   /**
    * @throws RepositoryException
    * @throws \Dibi\Exception
