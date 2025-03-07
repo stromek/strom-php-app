@@ -23,7 +23,7 @@ class CallbackHandler {
     $this->callback = match(true) {
       is_string($callback) => $this->createCallbackFromString($callback),
       is_array($callback) => $this->createCallbackFromArray($callback),
-      default => $callback
+      default => $this->createCallbackFromClosure($callback),
     };
   }
 
@@ -43,6 +43,12 @@ class CallbackHandler {
     };
   }
 
+
+  private function createCallbackFromClosure(\Closure $Closure): \Closure {
+    $this->reflection = new \ReflectionFunction($Closure);
+
+    return $Closure;
+  }
 
   /**
    * @param array{0: class-string|object, 1: string} $array
