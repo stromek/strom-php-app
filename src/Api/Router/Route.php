@@ -8,6 +8,7 @@ namespace App\Api\Router;
 use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
 use App\Http\Enum\MethodEnum;
+use App\Middleware\MiddlewareInterface;
 
 
 class Route {
@@ -18,10 +19,36 @@ class Route {
 
   private RouteHandler $handler;
 
+  private bool|\Closure $middlewareFilter = true;
+
   public function __construct(MethodEnum $Method, string $url, RouteHandler $RouteHandler) {
     $this->method = $Method;
     $this->url = $url;
     $this->handler = $RouteHandler;
+  }
+
+
+  /**
+   * Filtrování middleware
+   *  true = platí vše
+   *  false = neplatí nic
+   *  \Closure = filtrovační metoda
+   *
+   *
+   * @param bool|\Closure $filter
+   */
+  public function setMiddlewareFilter(bool|\Closure $filter): void {
+    $this->middlewareFilter = $filter;
+  }
+
+
+  /**
+   * Zda middleware je aplikovatelný na tuto routu
+   */
+  public function isMiddlewareApplicable(MiddlewareInterface $Middleware): bool {
+    $filterFunction = $this->middlewareFilter;
+
+    return is_bool($filterFunction) ? $filterFunction : $filterFunction($Middleware, $this);
   }
 
 

@@ -108,6 +108,7 @@ class Router implements RouteDefinitionInterface {
     return $this->createRoute(MethodEnum::OPTIONS, $url, $handler);
   }
 
+
   /**
    * @param class-string<\Throwable> $class
    */
@@ -158,7 +159,7 @@ class Router implements RouteDefinitionInterface {
    */
   public function findRouteByRequest(?RequestInterface $Request = null): ?Route {
     $Request ??= $this->request;
-
+    
     foreach($this->routes as $Route) {
       if($Route->isRequestMatch($Request)) {
         return $Route;
@@ -185,6 +186,10 @@ class Router implements RouteDefinitionInterface {
     foreach (array_reverse($this->middlewares) as ["middleware" => $Middleware, "filter" => $Filter]) {
       /** @var MiddlewareInterface $Middleware */
       /** @var ?\Closure $Filter */
+
+      if($Payload->route AND !$Payload->route->isMiddlewareApplicable($Middleware)) {
+        continue;
+      }
 
       if(!$Filter OR $Filter($Payload)) {
         $current = $next;
