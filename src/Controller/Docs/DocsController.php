@@ -34,6 +34,7 @@ class DocsController extends \App\Controller\HTMLController {
       "application/json"
     );
 
+    $Response->addHeader("Content-Disposition", "inline; filename=\"swagger.json\"");
     $Response->addHeader("Access-Control-Allow-Origin", "*");
 
     return $Response;
