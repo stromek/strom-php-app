@@ -52,4 +52,10 @@ interface RouteDefinitionInterface {
    */
   public function delete(string $url, \Closure|array $handler): Route;
 
+  
+  /**
+   * @param \Closure|array{0: class-string, 1: string} $handler
+   */
+  public function option(string $url, \Closure|array $handler): Route;
+
 }

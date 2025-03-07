@@ -102,6 +102,13 @@ class Router implements RouteDefinitionInterface {
 
 
   /**
+   * @param \Closure|array{0: class-string, 1: string} $handler
+   */
+  public function option(string $url, \Closure|array $handler): Route {
+    return $this->createRoute(MethodEnum::OPTIONS, $url, $handler);
+  }
+
+  /**
    * @param class-string<\Throwable> $class
    */
   public function setErrorHandler(string $class, \Closure $Closure, ?\Closure $Filter = null): void {

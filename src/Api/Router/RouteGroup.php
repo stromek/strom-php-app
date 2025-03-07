@@ -86,6 +86,14 @@ class RouteGroup implements RouteDefinitionInterface {
   }
 
 
+  /**
+   * @param \Closure|array{0: class-string, 1: string} $handler
+   */
+  public function option(string $url, \Closure|array $handler): Route {
+    return $this->router->option($this->makeURL($url), $handler);
+  }
+
+
   private function makeURL(string $url): string {
     // Kontrola aby URL nebyla "/prefix/" . "/url.." (/prefix//url)
     if(str_ends_with($this->url, "/") AND str_starts_with($url, "/")) {

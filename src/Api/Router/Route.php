@@ -62,7 +62,6 @@ class Route {
 
     return [];
   }
-  
 
   private function createRegex(): string {
     // Wildcard *
