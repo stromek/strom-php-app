@@ -11,6 +11,8 @@ use App\Controller\Api\CustomerController;
 use App\Controller\Api\ThreadController;
 use App\Exception\AppException;
 use App\Interface\AppErrorInterface;
+use App\Middleware\AuthenticationCustomerMiddleware;
+use App\Middleware\MiddlewareInterface;
 use App\Util\RouterUtil;
 use DI\Container;
 
@@ -28,14 +30,30 @@ return function (Container $Container, RouteDefinitionInterface $Route): void {
       new AppException("Internal error.", 0, $Exception), null, RouterUtil::getErrorHandlerExceptionDetails($Exception)
     );
   });
-  
+
 
   /**
    * Autentifikace zkaznika
    */
-  $AuthenticationCustomerMiddleware = $Container->get(\App\Middleware\AuthenticationCustomerMiddleware::class);
+  $AuthenticationCustomerMiddleware = $Container->get(AuthenticationCustomerMiddleware::class);
   $Route->addMiddleware($AuthenticationCustomerMiddleware);
 
+
+  /**
+   * Preflight request a vypnuti autorizace pro tuto routu
+   */
+  $Route->option("/*", function() {
+    return new \App\Api\Response\Response(\App\Http\Enum\StatusCodeEnum::STATUS_NO_CONTENT, "", [
+      "Access-Control-Allow-Origin" => "*",
+      "Access-Control-Allow-Methods" => "GET, POST",
+      "Access-Control-Allow-Headers" => "Authorization, Content-Type, Correlation_id"
+    ]);
+  })->setMiddlewareFilter(fn(MiddlewareInterface $M) => $M::class !== $AuthenticationCustomerMiddleware::class);
+
+  /**
+   * Dokumentae
+   */
+  $Route->get("/swagger.json", [\App\Controller\Docs\DocsController::class, "swagger"]);
 
   /**
    * Zákazník
