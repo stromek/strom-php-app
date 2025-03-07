@@ -5,6 +5,7 @@ namespace App\Api\Response;
 
 use App\Api\Response\Filter\ResponseFilterFactory;
 use App\Api\Response\Filter\ResponseFilterJSON;
+use App\Api\Response\Filter\ResponseFilterJSONApi;
 use App\Api\Response\Structure\ApiResponseStructure;
 use App\Http\Enum\StatusCodeEnum;
 
@@ -18,27 +19,11 @@ class ResponseFactory {
     $this->request = $httpRequest;
   }
 
-//  /**
-//   * Vytvoření obecné odpovědi
-//   *
-//   * @param mixed $payload
-//   * @param StatusCodeEnum $statusCodeEnum
-//   * @return ResponseInterface
-//   */
-//  public function createResponseWithFilter(mixed $payload, StatusCodeEnum $statusCodeEnum = StatusCodeEnum::STATUS_OK): ResponseInterface {
-//    $Filter = $this->createResponseFilter();
-//
-//    return $this->createResponse(
-//      $statusCodeEnum,
-//      $Filter->transform($payload),
-//      $Filter->contentType(),
-//    );
-//  }
 
-
-  public function createResponse(StatusCodeEnum $statusCodeEnum, string $body, string|null $contentType): ResponseInterface {
-    $headers = [];
-
+  /**
+   * @param array<string, string> $headers
+   */
+  public function createResponse(StatusCodeEnum $statusCodeEnum, string $body, string|null $contentType, array $headers = []): ResponseInterface {
     if($contentType) {
       $headers['Content-Type'] = $contentType;
     }
@@ -52,7 +37,7 @@ class ResponseFactory {
    * @param array<array-key, mixed> $meta
    */
   public function createApiResponse(mixed $data, array $meta = [], StatusCodeEnum $statusCodeEnum = StatusCodeEnum::STATUS_OK): ResponseInterface {
-    $Filter = new ResponseFilterJSON();
+    $Filter = new ResponseFilterJSONApi();
 
     $Body = new ApiResponseStructure(
       ApiResponseStructure::STATUS_SUCCESS,
@@ -63,7 +48,7 @@ class ResponseFactory {
       null
     );
 
-    $correlation_id = $this->request->getHeaderLine("correlation_id");
+    $correlation_id = $this->request->getHeaderLine("Correlation_id");
     if($correlation_id) {
       $Body->addMeta("correlation_id", $correlation_id);
     }
@@ -79,7 +64,7 @@ class ResponseFactory {
 
 
   public function createApiResponseFromException(\Exception $Exception, ?StatusCodeEnum $statusCodeEnum = null, mixed $details = null): ResponseInterface {
-    $Filter = new ResponseFilterJSON();
+    $Filter = new ResponseFilterJSONApi();
 
     if(is_null($statusCodeEnum) AND $Exception instanceof \App\Interface\AppErrorInterface) {
       $statusCodeEnum = $Exception->getStatusCodeEnum();
@@ -132,16 +117,5 @@ class ResponseFactory {
       "text/html",
     );
   }
-
-
-//  private function createResponseFilter(): \App\Api\Response\Filter\ResponseFilterInterface {
-//    $format = $this->request->getQuery("format") ?? "";
-//
-//    return ResponseFilterFactory::create(
-//      is_array($format) ? "" : $format,
-//      $this->request->getHeaderLine("accept")
-//    );
-//  }
-
 
 }
