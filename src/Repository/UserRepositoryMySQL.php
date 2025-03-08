@@ -10,21 +10,12 @@ use Dibi\Connection;
 
 /**
  * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
- * @template E of UserEntity
- * @extends RepositoryMySQL<E>
  */
 class UserRepositoryMySQL extends RepositoryMySQL {
 
-  /**
-   * @var UserMapperMySQL<E>
-   */
   private UserMapperMySQL $mapper;
   
 
-  /**
-   * @param Connection $db
-   * @param UserMapperMySQL<E> $Mapper
-   */
   public function __construct(Connection $db, UserMapperMySQL $Mapper) {
     parent::__construct($db);
 
@@ -62,7 +53,7 @@ class UserRepositoryMySQL extends RepositoryMySQL {
    * @param int $customer_id
    * @return array<int, UserEntity>
    */
-  public function findAllByCustomerID(int $customer_id) {
+  public function findAllByCustomerID(int $customer_id): array {
     return \App\Util\Arr::create($this->findAll("user", [["customer_id = %i", $customer_id]]))
       ->map(fn(\Dibi\Row $Row) => $this->mapper->createUserEntity($Row))
       ->toArray();

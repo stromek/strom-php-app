@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace Api\Router;
 
 use App\Api\Router\Route;
-use App\Api\Router\RouteHandler;
 use App\Http\Enum\MethodEnum;
 use App\Middleware\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;

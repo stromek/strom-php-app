@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Attribute\Validator\Length;
 use OpenApi\Attributes as OA;
 use App\Entity\Attribute\ApiResponse\Visibility;
 use App\Entity\Attribute\Storage\Primary;
@@ -13,7 +14,6 @@ use App\Entity\Attribute\Value\DefaultValue;
 
 
 /**
- * @extends Entity<MessageEntity>
  * @property int $id
  * @property int $thread_id
  * @property int $customer_id

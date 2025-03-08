@@ -9,6 +9,7 @@ use Tracy\Debugger;
 
 Debugger::$logDirectory = null;
 Debugger::$strictMode = true;
+Debugger::$logDirectory = TMP_DIR;
 //Debugger::enable(Debugger::Production);
 Debugger::enable(Debugger::Development);
 
@@ -107,7 +108,7 @@ function vd(mixed $var): void {
       $functionName = $item['function'];
 
     }else {
-      $functionName = $item['function'] ?? "?";
+      $functionName = $item['function'];
     }
 
 
@@ -157,5 +158,8 @@ function vd(mixed $var): void {
 
     $Panel = new Dibi\Bridges\Tracy\Panel();
     $Panel->register($Container->get(\Dibi\Connection::class));
+
+
+//    $Router = $Container->get(\App\Api\Router\Router::class);
   }
 })();

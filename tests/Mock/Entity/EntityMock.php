@@ -14,8 +14,6 @@ use App\Entity\Entity;
 
 
 /**
- * @extends Entity<EntityMock>
- *
  * @property int $blank
  * @property int $id
  * @property int $code

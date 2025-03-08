@@ -61,7 +61,7 @@ class RequestTest extends TestCase {
    * @param string $uri
    * @return \GuzzleHttp\Psr7\Request
    */
-  private function createHttpRequest(string $uri = "http://localhost/", MethodEnum $Method = MethodEnum::GET, $contentType = 'application/json'): \GuzzleHttp\Psr7\Request {
+  private function createHttpRequest(string $uri = "http://localhost/", MethodEnum $Method = MethodEnum::GET, string $contentType = 'application/json'): \GuzzleHttp\Psr7\Request {
     return new \GuzzleHttp\Psr7\Request(
       $Method->value,
       $uri,

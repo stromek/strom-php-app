@@ -6,18 +6,17 @@ namespace App\Api\Transformer;
 
 
 use App\Entity\Attribute\ApiResponse\Visibility;
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 use App\Util\Arr;
 
 
 class EntityResponseTransformer implements ResponseTransformerInterface {
 
   /**
-   * @template E of Entity
-   * @param Entity<E> $Entity
    * @return array<array-key, mixed>
+   * @throws ResponseTransformerException|\App\Entity\Property\PropertyException
    */
-  public function transformEntity(Entity $Entity, string $version = null): array {
+  public function transformEntity(EntityInterface $Entity, string $version = null): array {
     $attributes = [];
 
     foreach($Entity->getProperties() as $Property) {
@@ -44,8 +43,7 @@ class EntityResponseTransformer implements ResponseTransformerInterface {
 
 
   /**
-   * @template E of Entity
-   * @param Entity<E>[] $entities
+   * @param EntityInterface[] $entities
    * @return array<array-key, array<array-key, mixed>>
    */
   public function transformEntityList(array $entities, string $version = null): array {

@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace App\Entity\Attribute\Validator;
 
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @extends Validator<int|float, E>
+ * @extends Validator<int|float>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Range extends Validator {
@@ -31,10 +30,9 @@ class Range extends Validator {
 
   /**
    * @param int|float $value
-   * @param ?Entity<E> $Entity
    * @throws ValidatorException
    */
-  public function validate($value, ?Entity $Entity = null): void {
+  public function validate($value, ?EntityInterface $Entity = null): void {
     if((!is_null($this->min) AND $value < $this->min) OR (!is_null($this->max) AND $value > $this->max)) {
       throw new ValidatorException("The value '{$value}' must be between '".($this->min??"[unlimited]")."' and '".($this->max??"[unlimited]")."'.");
     }

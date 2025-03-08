@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace App\Entity\Attribute\Validator;
 
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @extends Validator<string, E>
+ * @extends Validator<string>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Length extends Validator {
@@ -31,10 +30,9 @@ class Length extends Validator {
 
   /**
    * @param string $value
-   * @param ?Entity<E> $Entity
    * @throws ValidatorException
    */
-  public function validate($value, ?Entity $Entity = null): void {
+  public function validate($value, ?EntityInterface $Entity = null): void {
     $length = mb_strlen(strval($value));
 
     if((!is_null($this->min) AND $length < $this->min) OR (!is_null($this->max) AND $length > $this->max)) {

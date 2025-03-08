@@ -7,7 +7,7 @@ namespace App\Mapper;
 use App\Entity\Attribute\AttributeInterface;
 use App\Entity\Attribute\Storage\Primary;
 use App\Entity\Attribute\Storage\StorageInterface;
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 use App\Entity\Property\Property;
 use Dibi\Literal;
 
@@ -15,7 +15,6 @@ use Dibi\Literal;
 /**
  * @phpstan-type DibiData array<array-key, Literal>
  * @phpstan-type DibiCondition array<int, array{0: string, 1: mixed}|array<int, string>>
- * @template E of Entity
  */
 abstract class MapperMySQL implements MapperInterface {
 
@@ -26,10 +25,9 @@ abstract class MapperMySQL implements MapperInterface {
   /**
    * Seznam properties které se mají aktualizovat o proti DB
    *
-   * @param Entity<E> $Entity
    * @return string[]
    */
-  public function entityToRefresh(Entity $Entity): array {
+  public function entityToRefresh(EntityInterface $Entity): array {
     $properties = [];
 
     foreach($Entity->getProperties() as $Property) {
@@ -57,10 +55,9 @@ abstract class MapperMySQL implements MapperInterface {
 
 
   /**
-   * @param Entity<E> $Entity
    * @return DibiCondition
    */
-  public function entityToConditions(\App\Entity\Entity $Entity): array {
+  public function entityToConditions(EntityInterface $Entity): array {
     $conditions = [];
 
     foreach($Entity->getProperties() as $Property) {
@@ -81,10 +78,9 @@ abstract class MapperMySQL implements MapperInterface {
   /**
    * Položky k vytvoření záznamu
    *
-   * @param Entity<E> $Entity
    * @return DibiData
    */
-  public function entityToInsert(Entity $Entity): array {
+  public function entityToInsert(EntityInterface $Entity): array {
     $data = [];
 
     foreach($Entity->getProperties() as $Property) {
@@ -112,10 +108,9 @@ abstract class MapperMySQL implements MapperInterface {
   /**
    * Položky k vytvoření záznamu
    *
-   * @param Entity<E> $Entity
    * @return DibiData
    */
-  public function entityToUpdate(Entity $Entity): array {
+  public function entityToUpdate(EntityInterface $Entity): array {
     $data = [];
 
     foreach($Entity->getProperties() as $Property) {
@@ -153,9 +148,7 @@ abstract class MapperMySQL implements MapperInterface {
   /**
    * Zda má property atribut dle callbacku
    *
-   * @template T of AttributeInterface
-   * @param Property<E> $Property
-   * @param class-string<T> $attributeClassName
+   * @param class-string<AttributeInterface> $attributeClassName
    * @param \Closure|null $Closure
    * @return bool
    **/
@@ -168,7 +161,7 @@ abstract class MapperMySQL implements MapperInterface {
    * Nalezeni atributu dle callbacku
    *
    * @template T of AttributeInterface
-   * @param Property<E> $Property
+   * @param Property $Property
    * @param class-string<T> $attributeClassName
    * @param \Closure|null $Closure
    * @return T[]
@@ -187,7 +180,7 @@ abstract class MapperMySQL implements MapperInterface {
 
   
   /**
-   * @param Property<E> $Property
+   * @param Property $Property
    * @return string|null
    */
   protected function getPropertyModifier(Property $Property): ?string {
@@ -210,8 +203,7 @@ abstract class MapperMySQL implements MapperInterface {
 
 
   /**
-   * @param Property<E> $Property
-   * @return mixed
+   * @param Property $Property
    */
   protected function getPropertyValue(Property $Property): mixed {
     return $Property->getValueSafe();

@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace App\Entity\Attribute\Mutator;
 
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @implements MutatorInterface<int|float, E>
+ * @implements MutatorInterface<int|float>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class Division implements MutatorInterface {
@@ -23,9 +22,8 @@ class Division implements MutatorInterface {
 
   /**
    * @param int|float $value
-   * @param ?Entity<E> $Entity
    */
-  public function mutate($value, ?Entity $Entity = null): float {
+  public function mutate($value, ?EntityInterface $Entity = null): float {
     return $value / $this->divisor;
   }
 

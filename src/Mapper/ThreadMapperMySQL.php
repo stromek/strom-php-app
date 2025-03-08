@@ -6,10 +6,6 @@ namespace App\Mapper;
 use App\Entity\Factory\ThreadEntityFactory;
 
 
-/**
- * @template E of \App\Entity\Entity
- * @extends MapperMySQL<E>
- */
 class ThreadMapperMySQL extends MapperMySQL {
 
   private ThreadEntityFactory $factory;

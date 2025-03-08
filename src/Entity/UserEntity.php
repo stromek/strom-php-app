@@ -13,7 +13,6 @@ use App\Entity\Attribute\Value\DefaultValue;
 
 
 /**
- * @extends Entity<UserEntity>
  * @property int $id
  * @property int $customer_id
  * @property string $hash

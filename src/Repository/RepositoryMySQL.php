@@ -4,19 +4,21 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Entity;
+use App\Entity\EntityInterface;
 use App\Mapper\MapperMySQL;
 use App\Repository\Enum\RepositorySourceEnum;
 use Dibi\Result;
 
 
 /**
- * @template E of Entity
  * @phpstan-import-type DibiData from \App\Mapper\MapperMySQL
  * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
  */
 abstract class RepositoryMySQL implements RepositoryInterface {
 
+
   protected \Dibi\Connection $db;
+
 
   public function __construct(\Dibi\Connection $db) {
     $this->db = $db;
@@ -27,10 +29,7 @@ abstract class RepositoryMySQL implements RepositoryInterface {
     return RepositorySourceEnum::MYSQL;
   }
 
-  /**
-   * @param Entity<E> $Entity
-   */
-  public function checkEntity(Entity $Entity): void {
+  public function checkEntity(EntityInterface $Entity): void {
     $Entity->check(false);
   }
 
@@ -52,8 +51,8 @@ abstract class RepositoryMySQL implements RepositoryInterface {
   /**
    * @param string $tableName
    * @param DibiCondition $conditions
-   * @param array<mixed> $orderBy
-   * @return \Dibi\Row[]
+   * @param array<int, mixed> $orderBy
+   * @return array<int, \Dibi\Row|array<array-key, mixed>>
    */
   protected function findAll(string $tableName, array $conditions, array $orderBy = []): array {
     $orderBySql = [];
@@ -71,12 +70,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param MapperMySQL<E> $Mapper
-   * @param Entity<E> $Entity
-   * @param string $tableName
    * @throws \Dibi\Exception|\App\Mapper\MapperException|RepositoryException
    */
-  protected function insertEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+  protected function insertEntity(MapperMySQL $Mapper, EntityInterface $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
     $Result = $this->insertRow($tableName, $Mapper->entityToInsert($Entity));
 
@@ -101,12 +97,10 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param MapperMySQL<E> $Mapper
-   * @param Entity<E> $Entity
    * @param string $tableName
    * @throws \Dibi\Exception|\App\Mapper\MapperException|RepositoryException
    */
-  protected function updateEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+  protected function updateEntity(MapperMySQL $Mapper, EntityInterface $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
     $Result = $this->updateRow($tableName, $Mapper->entityToUpdate($Entity), $Mapper->entityToConditions($Entity));
 
@@ -132,12 +126,9 @@ abstract class RepositoryMySQL implements RepositoryInterface {
 
 
   /**
-   * @param MapperMySQL<E> $Mapper
-   * @param Entity<E> $Entity
-   * @param string $tableName
    * @throws \Dibi\Exception|\App\Mapper\MapperException
    */
-  protected function deleteEntity(MapperMySQL $Mapper, Entity $Entity, string $tableName): Result {
+  protected function deleteEntity(MapperMySQL $Mapper, EntityInterface $Entity, string $tableName): Result {
     $this->checkEntity($Entity);
     return $this->deleteRow($tableName, $Mapper->entityToConditions($Entity));
   }
@@ -159,14 +150,12 @@ abstract class RepositoryMySQL implements RepositoryInterface {
   /**
    * Refresh hodnot z databáze do entity
    *
-   * @param Entity<E> $Entity
-   * @param string $tableName
    * @param string[] $propertiesNames názvy property/názvy sloupců
    * @param DibiCondition $conditions
    * @return void
    * @throws \Dibi\Exception|RepositoryException
    */
-  protected function refreshEntity(Entity $Entity, string $tableName, array $propertiesNames, array $conditions): void {
+  protected function refreshEntity(EntityInterface $Entity, string $tableName, array $propertiesNames, array $conditions): void {
     if(!count($propertiesNames)) {
       throw new RepositoryException("At least one property must be defined in \$properties");
     }

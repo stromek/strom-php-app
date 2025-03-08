@@ -10,21 +10,12 @@ use Dibi\Connection;
 
 /**
  * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
- * @template E of CustomerEntity
- * @extends RepositoryMySQL<E>
  */
 class CustomerRepositoryMySQL extends RepositoryMySQL {
 
-  /**
-   * @var CustomerMapperMySQL<E>
-   */
   private \App\Mapper\CustomerMapperMySQL $mapper;
 
 
-  /**
-   * @param Connection $db
-   * @param CustomerMapperMySQL<E> $Mapper
-   */
   public function __construct(Connection $db, CustomerMapperMySQL $Mapper) {
     parent::__construct($db);
 

@@ -14,15 +14,8 @@ use DI\Attribute\Inject;
 use OpenApi\Attributes as OA;
 
 
-/**
- * @template E of CustomerEntity
- */
 class CustomerController extends ApiController {
 
-
-  /**
-   * @var CustomerRepositoryMySQL<E>
-   */
   #[Inject]
   private readonly CustomerRepositoryMySQL $customerRepo;
 

@@ -8,21 +8,14 @@ use App\Mapper\MessageMapperMySQL;
 use Dibi\Connection;
 
 
-/**
- * @template E of MessageEntity
- * @extends RepositoryMySQL<E>
- */
 class MessageRepositoryMySQL extends RepositoryMySQL {
 
-  /**
-   * @var MessageMapperMySQL<E>
-   */
   private MessageMapperMySQL $mapper;
 
 
   /**
    * @param Connection $db
-   * @param MessageMapperMySQL<E> $Mapper
+   * @param MessageMapperMySQL $Mapper
    */
   public function __construct(Connection $db, MessageMapperMySQL $Mapper) {
     parent::__construct($db);

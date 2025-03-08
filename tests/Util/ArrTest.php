@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 
 class ArrTest extends TestCase {
 
-  public function testCherryPickKey() {
+  public function testCherryPickKey(): void {
     $arr = ["color" => "blue", "size" => 5];
 
     $this->assertEquals(["color" => "blue"], Arr::create($arr)->cherryPickKey(["color"])->toArray());
   }
 
-  public function testFilterAssocValue() {
+  public function testFilterAssocValue(): void {
     $array = [
       ["group" => 1, "name" => "name1"],
       ["group" => 2, "name" => "name2"],

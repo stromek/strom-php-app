@@ -10,3 +10,17 @@ parameters:
 		- boot/constants.php
 
 	tmpDir: tmp
+
+	ignoreErrors:
+		-
+			identifier: property.onlyRead
+			path: src/Entity
+		-
+			identifier: property.onlyWritten
+			path: src/Entity
+		-
+			identifier: property.unused
+			path: src/Entity
+
+includes:
+  - ./vendor/zorac/phpstan-php-di/extension.neon

@@ -53,6 +53,9 @@ class Route {
   }
 
 
+  /**
+   * @param RequestInterface<array-key, mixed> $Request
+   */
   public function isRequestMatch(RequestInterface $Request): bool {
     return $this->isMatch($Request->getMethod(), $Request->getUri()->getPath());
   }
@@ -73,13 +76,16 @@ class Route {
   }
 
 
+  /**
+   * @param RequestInterface<array-key, mixed> $Request
+   */
   public function run(RequestInterface $Request): ResponseInterface {
     return $this->handler->__invoke($this->parseArguments($Request));
   }
 
 
   /**
-   * @param RequestInterface $Request
+   * @param RequestInterface<array-key, mixed> $Request
    * @return array<string, string>
    */
   private function parseArguments(RequestInterface $Request): array {

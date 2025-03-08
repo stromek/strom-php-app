@@ -3,33 +3,30 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use OpenApi\Attributes as OA;
 use App\Entity\Attribute\PropertyException;
 use App\Entity\Property\Property;
 use App\Entity\Property\PropertyStorage;
 
 
-/**
- * @template E of Entity
- */
-abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
+abstract class Entity implements EntityInterface {
 
-  /**
-   * @var PropertyStorage<E>
-   */
   readonly protected PropertyStorage $attributeStorage;
+
 
   public function __construct() {
     $this->attributeStorage = new PropertyStorage($this);
   }
 
+
   public function __set(string $name, mixed $value): void {
     $this->getProperty($name)->setValue($value);
   }
 
+
   public function __get(string $name): mixed {
     return $this->getProperty($name)->getValue();
   }
+
 
   public function check(bool $strict = true): void {
     // @TODO mutate spustit ci ne?
@@ -37,16 +34,19 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
     $this->validate($strict);
   }
 
+
   public function mutate(): void {
     $this->attributeStorage->mutate();
   }
+
 
   public function validate(bool $strict = true): void {
     $this->attributeStorage->validate($strict);
   }
 
+
   /**
-   * @return Property<E>[]
+   * @return Property[]
    */
   public function getProperties(): array {
     return $this->attributeStorage->getProperties();
@@ -54,7 +54,7 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
 
 
   /**
-   * @return Property<E>
+   * @return Property
    */
   public function getProperty(string $name): Property {
     return $this->attributeStorage->getProperty($name);
@@ -70,6 +70,7 @@ abstract class Entity implements \JsonSerializable, \App\Xml\XMLSerializable {
     }, $this->getProperties());
   }
 
+  
   /**
    * @return array<array-key, mixed>
    */

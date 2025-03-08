@@ -10,7 +10,6 @@ use App\Entity\Enum\CustomerAuthTypeEnum;
 
 
 /**
- * @extends Entity<CustomerAuthEntity>
  * @property int $customer_id
  * @property CustomerAuthTypeEnum $authType
  * @property string $authValue

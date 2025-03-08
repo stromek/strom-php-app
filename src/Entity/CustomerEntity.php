@@ -13,7 +13,6 @@ use App\Entity\Attribute\Value\DefaultValue;
 
 
 /**
- * @extends Entity<CustomerEntity>
  * @property int $id
  * @property string $clientKey
  * @property string $name

@@ -10,21 +10,12 @@ use Dibi\Connection;
 
 /**
  * @phpstan-import-type DibiCondition from \App\Mapper\MapperMySQL
- * @template E of ThreadEntity
- * @extends RepositoryMySQL<E>
  */
 class ThreadRepositoryMySQL extends RepositoryMySQL {
 
-  /**
-   * @var ThreadMapperMySQL<E>
-   */
   private ThreadMapperMySQL $mapper;
 
 
-  /**
-   * @param Connection $db
-   * @param ThreadMapperMySQL<E> $Mapper
-   */
   public function __construct(Connection $db, ThreadMapperMySQL $Mapper) {
     parent::__construct($db);
 

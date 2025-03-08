@@ -10,6 +10,10 @@ class ApiResponseStructure {
 
   const STATUS_ERROR = "error";
 
+
+  /**
+   * @var self::STATUS_*
+   */
   private readonly string $status;
 
 
@@ -57,19 +61,14 @@ class ApiResponseStructure {
 
 
   /**
-   * @return array{
-   *   status: self::STATUS_*,
-   *   error: ?array{code: string, message: string, details: array},
-   *   data: mixed,
-   *   meta: array<array-key, mixed>
-   * }
+   * @return array{status: self::STATUS_*, error?: array{code: string, message: ?string, details: ?array<array-key, mixed>}, data: mixed, meta: array<array-key, mixed>}
    */
   public function create(): array {
     $response = [
       "status" => $this->status
     ];
 
-    if($this->errorCode) {
+    if(!is_null($this->errorCode)) {
       $response['error'] = [
         "code" => $this->errorCode,
         "message" => $this->errorMessage,

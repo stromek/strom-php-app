@@ -8,13 +8,11 @@ use App\Entity\Attribute\AttributeInterface;
 use App\Entity\Attribute\Validator\ValidatorException;
 use App\Entity\Attribute\Validator\ValidatorInterface;
 use App\Entity\Attribute\Value\ValueInterface;
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
  * Entity property, responsible for the GET/SET, validation and mutation
- *
- * @template E of Entity
  */
 class Property {
 
@@ -27,17 +25,12 @@ class Property {
 
   private \ReflectionProperty $reflection;
 
-  /**
-   * @var Entity<E>
-   */
-  private Entity $entity;
+  private EntityInterface $entity;
 
   /**
-   * @param Entity<E> $Entity
-   * @param string $name
    * @throws PropertyException
    */
-  public function __construct(Entity $Entity, string $name) {
+  public function __construct(EntityInterface $Entity, string $name) {
     $this->entity = $Entity;
     $this->name = $name;
 
@@ -145,7 +138,7 @@ class Property {
     try {
       $this->validateValue($value);
       return true;
-    }catch(PropertyException $e) {
+    }catch(PropertyException) {
       return false;
     }
   }

@@ -5,29 +5,21 @@ namespace App\Entity\Property;
 
 
 use App\Entity\Attribute\Storage\StorageException;
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
-/**
- * @template E of Entity
- */
 class PropertyStorage {
 
   /**
-   * @var array<string, Property<E>>
+   * @var array<string, Property>
    */
   private array $properties;
 
-  /**
-   * @var Entity<E>
-   */
-  private Entity $entity;
+
+  private EntityInterface $entity;
 
 
-  /**
-   * @param Entity<E> $Entity
-   */
-  public function __construct(Entity $Entity) {
+  public function __construct(EntityInterface $Entity) {
     $this->entity = $Entity;
   }
 
@@ -57,10 +49,9 @@ class PropertyStorage {
 
 
   /**
-   * @return array<string, Property<E>>
+   * @return array<string, Property>
    * @throws PropertyException
    * @throws StorageException
-   * @throws \ReflectionException
    */
   public function getProperties(): array {
     if(isset($this->properties)) {
@@ -88,8 +79,10 @@ class PropertyStorage {
 
   /**
    * @param string $name
-   * @return Property<E>
+   * @return Property
+   * @throws PropertyException
    * @throws PropertyStorageException
+   * @throws StorageException
    */
   public function getProperty(string $name): Property {
     $Property = $this->getProperties()[$name] ?? null;

@@ -6,10 +6,6 @@ namespace App\Mapper;
 use App\Entity\Factory\CustomerAuthEntityFactory;
 
 
-/**
- * @template E of \App\Entity\Entity
- * @extends MapperMySQL<E>
- */
 class CustomerAuthMapperMySQL extends MapperMySQL {
 
   private CustomerAuthEntityFactory $factory;

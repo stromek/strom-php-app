@@ -3,29 +3,25 @@ declare(strict_types=1);
 
 namespace App\Entity\Attribute\Validator;
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 use App\Entity\Attribute\AttributeInterface;
 
 
 /**
  * @template T
- * @template E of Entity
  */
 interface ValidatorInterface extends AttributeInterface {
 
 
   /**
    * @param T $value
-   * @param ?Entity<E> $Entity
    * @throws ValidatorException
    */
-  public function validate($value, ?Entity $Entity = null): void;
+  public function validate($value, ?EntityInterface $Entity = null): void;
 
 
   /**
    * @param T $value
-   * @param ?Entity<E> $Entity
-   * @return bool
    */
-  public function isValid($value, ?Entity $Entity = null): bool;
+  public function isValid($value, ?EntityInterface $Entity = null): bool;
 }

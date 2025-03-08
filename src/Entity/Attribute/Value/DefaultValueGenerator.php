@@ -3,12 +3,11 @@ declare(strict_types = 1);
 
 namespace App\Entity\Attribute\Value;
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @implements ValueInterface<callable, E>
+ * @implements ValueInterface<callable>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class DefaultValueGenerator implements ValueInterface {
@@ -24,10 +23,9 @@ class DefaultValueGenerator implements ValueInterface {
 
   /**
    * @param mixed $oldValue
-   * @param ?Entity<E> $Entity
    * @return mixed
    */
-  public function generate(mixed $oldValue, ?Entity $Entity = null): mixed {
+  public function generate(mixed $oldValue, ?EntityInterface $Entity = null): mixed {
     return ($this->callback)();
   }
 

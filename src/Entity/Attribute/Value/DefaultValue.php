@@ -1,14 +1,13 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Entity\Attribute\Value;
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @implements ValueInterface<null, E>
+ * @implements ValueInterface<null>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class DefaultValue implements ValueInterface {
@@ -22,6 +21,7 @@ class DefaultValue implements ValueInterface {
    */
   private string $type;
 
+
   /**
    * @param self::* $type
    */
@@ -32,10 +32,9 @@ class DefaultValue implements ValueInterface {
 
   /**
    * @param mixed $oldValue
-   * @param ?Entity<E> $Entity
    * @return mixed
    */
-  public function generate(mixed $oldValue, ?Entity $Entity = null): mixed {
+  public function generate(mixed $oldValue, ?EntityInterface $Entity = null): mixed {
     return match($this->type) {
       self::NOW => new \DateTime(),
       self::CURDATE => (new \DateTime())->setTime(0, 0, 0)

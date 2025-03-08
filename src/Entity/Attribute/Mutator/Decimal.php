@@ -4,12 +4,11 @@ declare(strict_types=1);
 namespace App\Entity\Attribute\Mutator;
 
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
- * @template E of Entity
- * @implements MutatorInterface<int|float, E>
+ * @implements MutatorInterface<int|float>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class Decimal implements MutatorInterface {
@@ -32,9 +31,8 @@ class Decimal implements MutatorInterface {
 
   /**
    * @param int|float $value
-   * @param ?Entity<E> $Entity
    */
-  public function mutate($value, ?Entity $Entity = null): float {
+  public function mutate($value, ?EntityInterface $Entity = null): float {
     return round($value, $this->decimal, $this->roundMode);
   }
 

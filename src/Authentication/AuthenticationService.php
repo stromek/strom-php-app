@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Authentication;
 
-use App\Authentication\Provider\AuthBearerProvider;
 use App\Authentication\Provider\AuthProviderInterface;
 
 use App\Entity\UserEntity;

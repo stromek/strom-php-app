@@ -6,10 +6,6 @@ namespace App\Mapper;
 use App\Entity\Factory\MessageEntityFactory;
 
 
-/**
- * @template E of \App\Entity\MessageEntity
- * @extends MapperMySQL<E>
- */
 class MessageMapperMySQL extends MapperMySQL {
 
   private MessageEntityFactory $factory;

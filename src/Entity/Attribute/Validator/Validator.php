@@ -3,21 +3,19 @@ declare(strict_types=1);
 
 namespace App\Entity\Attribute\Validator;
 
-use App\Entity\Entity;
+use App\Entity\EntityInterface;
 
 
 /**
  * @template T
- * @template E of Entity
- * @implements ValidatorInterface<T, E>
+ * @implements ValidatorInterface<T>
  */
 abstract class Validator implements ValidatorInterface {
 
   /**
    * @param T $value
-   * @param ?Entity<E> $Entity
    */
-  public function isValid($value, ?Entity $Entity = null): bool {
+  public function isValid($value, ?EntityInterface $Entity = null): bool {
     try {
       $this->validate($value, $Entity);
       return true;
