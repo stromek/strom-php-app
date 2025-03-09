@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Api\Router;
 
 
-use App\Api\Request\Request;
 use App\Api\Request\RequestInterface;
 use App\Api\Response\ResponseInterface;
+use App\Exception\ExceptionHandler;
 use App\Http\Enum\MethodEnum;
 use App\Middleware\MiddlewareInterface;
-use Tracy\Debugger;
 
 
 /**
@@ -23,10 +22,7 @@ class Router implements RouteDefinitionInterface {
    */
   private array $routes = [];
 
-  /**
-   * @var array<class-string<\Throwable>, array<int, array{handler: \Closure, filter: ?\Closure}>>
-   */
-  private array $errorHandlers = [];
+  private ExceptionHandler $exceptionHandler;
 
   /**
    * @var array<int, array{middleware: MiddlewareInterface, filter: ?\Closure}>
@@ -43,9 +39,10 @@ class Router implements RouteDefinitionInterface {
   /**
    * @param RequestInterface<array-key, mixed> $Request
    */
-  public function __construct(RequestInterface $Request, RouteHandlerFactory $RouteHandlerFactory) {
+  public function __construct(RequestInterface $Request, RouteHandlerFactory $RouteHandlerFactory, ExceptionHandler $ExceptionHandler) {
     $this->request = $Request;
     $this->routeHandlerFactory = $RouteHandlerFactory;
+    $this->exceptionHandler = $ExceptionHandler;
   }
 
   public function addMiddleware(MiddlewareInterface $Middleware, ?\Closure $Filter = null): void {
@@ -113,16 +110,12 @@ class Router implements RouteDefinitionInterface {
    * @param class-string<\Throwable> $class
    */
   public function setErrorHandler(string $class, \Closure $Closure, ?\Closure $Filter = null): void {
-    $this->errorHandlers[$class] ??= [];
-    $this->errorHandlers[$class][] = [
-      "handler" => $Closure,
-      "filter" => $Filter,
-    ];
+    $this->exceptionHandler->addErrorHandler($class, $Closure, $Filter);
   }
 
 
   /**
-   * @throws RouterUncaughtExceptionException
+   * @throws \App\Exception\ExceptionHandlerException
    */
   public function run(): ResponseInterface {
     $Request = $this->request;
@@ -205,33 +198,6 @@ class Router implements RouteDefinitionInterface {
 
 
   /**
-   * @return ResponseInterface
-   * @throws RouterUncaughtExceptionException
-   */
-  private function catchError(RouteFilterPayload $Payload): ResponseInterface {
-    $Exception = $Payload->exception;
-    if(!$Exception) {
-      throw new RouterUncaughtExceptionException($Payload::class." does not have a exception. This is APP error.");
-    }
-
-    foreach($this->errorHandlers as $class => $handlers) {
-      // Neni shoda třidy vyjímky
-      if($class !== $Exception::class AND !is_subclass_of($Exception::class, $class)) {
-        continue;
-      }
-
-      foreach($handlers as ["handler" => $handler, "filter" => $filter]) {
-        if(!$filter OR $filter($Payload)) {
-          return $handler($Payload->request, $Exception);
-        }
-      }
-    }
-
-    throw new RouterUncaughtExceptionException("Uncaught exception '".$Exception::class."' (".$Exception->getMessage()."). Use ".self::class."::setErrorHandler() to catch exception.", 0, $Exception);
-  }
-
-
-  /**
    * @param \Closure|array{0: class-string, 1: string} $handler
    */
   private function createRoute(MethodEnum $Method, string $url, \Closure|array $handler): Route {
@@ -239,6 +205,22 @@ class Router implements RouteDefinitionInterface {
     $this->addRoute($Route);
 
     return $Route;
+  }
+
+
+  /**
+   * @param RouteFilterPayload $Payload
+   * @return ResponseInterface
+   * @throws RouterException
+   * @throws \App\Exception\ExceptionHandlerException
+   */
+  private function catchError(RouteFilterPayload $Payload): ResponseInterface {
+    $Exception = $Payload->exception;
+    if(!$Exception) {
+      throw new RouterException($Payload::class." does not have a exception. This is APP error.");
+    }
+
+    return $this->exceptionHandler->handle($Exception, [$Payload], [$Payload->request, $Exception]);
   }
 
 }
